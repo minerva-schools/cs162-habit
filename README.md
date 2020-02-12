@@ -77,3 +77,6 @@ Now run the integration tests using the following commands:
     $ source venv_integration/bin/actvate
     $ pip3 install -r requirements-integration.txt
     $ pytest integration_test
+
+## Contributors
+1) Zane Sand – Team Lead / DevOps
