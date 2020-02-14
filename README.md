@@ -97,3 +97,6 @@ Now run the integration tests using the following commands:
 All tests should pass.
 
 Note: this is a seperate virutal environment!
+
+## Contributors
+- Zane Sand: Team Lead / DevOps & Backend
