@@ -1,49 +1,57 @@
 # Welcome to CS162 Final Project
 
-## Run Virtual Environment
+## Clone Repository
 
-Virtual environment is a key component in ensuring that the application is configured in the right environment
+### Make Project Directory
+```bash
+git clone https://github.com/minerva-schools/cs162-habit.git
+```
 
-##### Requirements
-* Python 3
-* Pip 3
+## Setup Local Environment
+
+### Install Dependencies
+
+1. Install python3 and pip3
 
 ```bash
 $ brew install python3
 ```
 
-Pip3 is installed with Python3
+2. Install virutalenv
 
-##### Installation
-To install virtualenv via pip run:
 ```bash
 $ pip3 install virtualenv
 ```
 
-##### Usage
-Creation of virtualenv:
+### Run Virtual Environment
 
-    $ virtualenv -p python3 venv
+3. Create virtualenv
 
-If the above code does not work, you could also do
+```bash
+$ virtualenv -p python3 venv
+```
+OR
+```bash
+$ python3 -m venv venv
+```
 
-    $ python3 -m venv venv
-
-To activate the virtualenv:
-
-    $ source venv/bin/activate
-
+4. Activate virtualenv
+```bash
+$ source venv/bin/activate
+```
 Or, if you are **using Windows** - [reference source:](https://stackoverflow.com/questions/8921188/issue-with-virtualenv-cannot-activate)
 
-    $ venv\Scripts\activate
+$ venv\Scripts\activate
 
-To deactivate the virtualenv (after you finished working):
+5. Install dependencies inside virtual environment
+```bash
+(venv) $ pip3 install -r requirements.txt
+```
 
-    $ deactivate
-
-Install dependencies in virtual environment:
-
-    $ pip3 install -r requirements.txt
+6. Deactivate virtual environment
+```bash
+$ deactivate
+```
 
 ## Environment Variables
 
@@ -59,14 +67,21 @@ Start the server by running:
     $ export FLASK_APP=web
     $ python3 -m flask run
 
+Navigate to [localhost:5000](localhost:5000), you should see "Hello World!".
+
 ## Unit Tests
 To run the unit tests use the following commands:
 
     $ python3 -m venv venv_unit
     $ source venv_unit/bin/activate
-    $ pip install -r requirements-unit.txt
-    $ export SQLALCHEMY_DATABASE_URI='sqlite:///web.db'
-    $ pytest unit_test
+    (venv_unit) $ pip3 install -r requirements-unit.txt
+    (venv_unit) $ export SQLALCHEMY_DATABASE_URI='sqlite:///web.db'
+    (venv_unit) $ pytest unit_test
+    (venv_unit) $ deactivate
+
+All tests should pass.
+
+Note: this is a seperate virtual environment!
 
 ## Integration Tests
 Start by running the web server in a separate terminal.
@@ -75,5 +90,10 @@ Now run the integration tests using the following commands:
 
     $ python3 -m venv venv_integration
     $ source venv_integration/bin/actvate
-    $ pip3 install -r requirements-integration.txt
-    $ pytest integration_test
+    (venv_integration) $ pip3 install -r requirements-integration.txt
+    (venv_integration) $ pytest integration_test
+    (venv_integration) $ deactivate
+
+All tests should pass.
+
+Note: this is a seperate virutal environment!
