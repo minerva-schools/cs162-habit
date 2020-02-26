@@ -100,3 +100,4 @@ Note: this is a seperate virutal environment!
 
 ## Contributors
 - Zane Sand: Team Lead / DevOps & Backend
+- Tom Kremer: Backend
