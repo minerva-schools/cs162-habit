@@ -102,3 +102,4 @@ Note: this is a seperate virutal environment!
 - Zane Sand: Team Lead / DevOps & Backend
 - Tom Kremer: Backend
 - Zineb Salimi: Backend
+- Nour Elkhalawy: Design / Backend
