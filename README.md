@@ -103,3 +103,4 @@ Note: this is a seperate virutal environment!
 - Tom Kremer: Backend
 - Zineb Salimi: Backend
 - Nour Elkhalawy: Design / Backend
+- Nathan Torento: Frontend
