@@ -89,7 +89,7 @@ Start by running the web server in a separate terminal.
 Now run the integration tests using the following commands:
 
     $ python3 -m venv venv_integration
-    $ source venv_integration/bin/actvate
+    $ source venv_integration/bin/activate
     (venv_integration) $ pip3 install -r requirements-integration.txt
     (venv_integration) $ pytest integration_test
     (venv_integration) $ deactivate
