@@ -17,54 +17,58 @@ def users():
     users = User.query.all()
     return render_template('users.html', users=users)
 
-@app.route('/signup')
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    return render_template('signup.html')
+    if request.method == 'GET':
+        return render_template('signup.html')
+    elif request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
 
-@app.route('/signup', methods=['POST'])
-def signup_post():
-    username = request.form.get('username')
-    password = request.form.get('password')
+        user = User.query.filter_by(username=username).first() # check if a user exists
 
-    user = User.query.filter_by(username=username).first() # check if a user exists
+        if user: # if a user is found, try again
+            flash('Username already exists')
+            return redirect(url_for('signup'))
 
-    if user: # if a user is found, try again
-        flash('Username already exists')
-        return redirect(url_for('signup'))
+        # create new user with the form data
+        new_user = User(username=username, password=generate_password_hash(password, method='sha256'))
 
-    # create new user with the form data
-    new_user = User(username=username, password=generate_password_hash(password, method='sha256'))
+        # add the new user to the database
+        db.session.add(new_user)
+        db.session.commit()
 
-    # add the new user to the database
-    db.session.add(new_user)
-    db.session.commit()
+        return redirect(url_for('login'))
+    else:
+        pass
+        #again, HTTP response handler baby???
 
-    return redirect(url_for('login'))
-
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    if request.method == 'GET':
+        return render_template('login.html')
+    elif request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        remember = True if request.form.get('remember') else False
+
+        user = User.query.filter_by(username=username).first()
+
+        # check if user actually exists
+        if not user:
+            flash('This username does not exist')
+            return redirect(url_for('login'))
+        if not check_password_hash(user.password, password):
+            flash('Incorrect password')
+            return redirect(url_for('login'))
+
+        # if the username exists and the password was correct, go to the user's "dashboard"
+        login_user(user, remember=remember)
+        return redirect(url_for('dashboard'))
+    else:
+        pass
+        #is it a good idea to throw in handlers for the other potential request methods? idk if this is handled in the decorator
     
-@app.route('/login', methods=['POST'])
-def login_post():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    remember = True if request.form.get('remember') else False
-
-    user = User.query.filter_by(username=username).first()
-
-    # check if user actually exists
-    if not user:
-        flash('This username does not exist')
-        return redirect(url_for('login'))
-    if not check_password_hash(user.password, password):
-        flash('Incorrect password')
-        return redirect(url_for('login'))
-
-    # if the username exists and the password was correct, go to the user's "dashboard"
-    login_user(user, remember=remember)
-    return redirect(url_for('dashboard'))
-
 @app.route('/logout')
 @login_required
 def logout():
