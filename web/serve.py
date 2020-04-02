@@ -3,29 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-
 import os
 
-app = Flask(__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'verysecretkey'
-
-db = SQLAlchemy(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-login_manager.init_app(app)
-
-class User(UserMixin,db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(200), unique=True) #add a way to ensure input is unique
-    password = db.Column(db.String(200)) # hashed upon the creation of User object from signup
-    
-    def __repr__(self):
-        return "<User(id={}, username={}, password={})>".format(self.id, self.username, self.password)
-
-db.create_all()
+from web import app, db, login_manager
+from .models import User
 
 @app.route('/')
 def index():
@@ -94,10 +75,6 @@ def logout():
 @login_required
 def dashboard():
     return render_template('dashboard.html', username=current_user.username)
-    
-@login_manager.user_loader
-def load_user(id):
-    return User.query.get(int(id))
     
 if __name__ == '__main__':
     app.run()
