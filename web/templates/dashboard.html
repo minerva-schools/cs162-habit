@@ -5,8 +5,22 @@
     <title>Dashboard</title>
 </head>
 <body>
-    <p>Hello {{username}}!</p>
+    <p>Hello {{user.username}}!</p>
     <p><a href="{{ url_for('logout') }}" class="navbar-item">Logout</a></p>
+
+    <h2>Add a New Habit</h2>
+    <form action="/dashboard/add" method="POST">
+        <h4>Habit Name</h4>
+        <input type="text" name="habit_name" value=""><br>
+        <h4>Habit Description</h4>
+        <input type="text" name="habit_description" value=""><br>
+        <input type="submit" value="Add Habit">
+    </form>
+
+    <h2>Current Habits</h2>
+    {% for habit in habits %}
+        <li>{{ habit.title }}<br>
+    {% endfor %}
 
 </body>
 </html>

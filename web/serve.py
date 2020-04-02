@@ -4,9 +4,8 @@ from datetime import datetime
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
-
 from web import app, db, login_manager
-from .models import User
+from .models import User, Habit, Log, Milestone
 
 @app.route('/')
 def index():
@@ -78,7 +77,17 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', username=current_user.username)
-    
+    habits = Habit.query.filter_by(user_id=current_user.id).all()
+    return render_template('dashboard.html', user=current_user, habits=habits)
+
+@app.route('/dashboard/add', methods=['POST'])
+@login_required
+def add_habit():
+    print("tits")
+    habit = Habit(user_id=current_user.id, title=request.form['habit_name'], description=request.form['habit_description'])
+    db.session.add(habit)
+    db.session.commit()
+    return redirect(url_for('dashboard'))
+
 if __name__ == '__main__':
     app.run()
