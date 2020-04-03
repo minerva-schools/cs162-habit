@@ -2,9 +2,10 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title> Edit Habit </title>
+        <title> Edit / Delete Habit </title>
     </head>
 
+    <h2>Edit</h2>
     <form action="/dashboard/edit/{{habit.id}}" method='POST'>
         <label for="title">Change Title:</label><br>
         <input type="text" id="title" name="title" value="{{habit.title}}"><br>
@@ -12,4 +13,9 @@
         <input type="text" id="description" name="description" value="{{habit.description}}"><br><br>
         <input type="submit" value="Submit">
       </form> 
+    
+      <h2>Delete</h2>
+    <form action="/dashboard/delete/{{habit.id}}" method='POST'>
+        <input type="submit" value="Delete">
+    </form>
 </html>
