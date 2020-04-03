@@ -63,6 +63,7 @@ class Milestone(db.Model):
     __tablename__ = 'milestone'
 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     habit_id  = db.Column(db.Integer, db.ForeignKey('habit.id'))
     time = db.Column(db.DateTime)
     note = db.Column(db.String(500)) # milestone-specific comments, such as 'vocabulary session'.

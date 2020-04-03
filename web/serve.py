@@ -88,33 +88,33 @@ def add_habit():
     db.session.commit()
     return redirect(url_for('dashboard'))
 
-@app.route('/dashboard/edit/<habit_id>', methods=['GET', 'POST'])
+@app.route('/dashboard/<habit_id>')
+@login_required
+def dashboard_habit(habit_id):
+    #pull both Milestones and Logs
+    habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+    milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
+    logs = Log.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
+    return render_template('habit.html', habit=habit, milestones=milestones, logs=logs)
+
+@app.route('/dashboard/<habit_id>/edit', methods=['POST'])
 @login_required
 def edit_habit(habit_id):
-    if request.method == 'POST':
-        #get habit being edited
-        habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
-        habit.title = request.form['title']
-        habit.description = request.form['description']
-        db.session.add(habit)
-        db.session.commit()
-        return redirect(url_for('dashboard'))
-    elif request.method == 'GET':
-        habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
-        return render_template('habit_edit.html', habit=habit)
-    else:
-        pass
+    #get habit being edited
+    habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+    habit.title = request.form['title']
+    habit.description = request.form['description']
+    db.session.add(habit)
+    db.session.commit()
+    return redirect(url_for('dashboard_habit', habit_id=habit_id))
 
-@app.route('/dashboard/delete/<habit_id>', methods=['POST'])
+@app.route('/dashboard/<habit_id>/delete', methods=['POST'])
 @login_required
 def delete_habit(habit_id):
-    if request.method == 'POST':
-        habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
-        db.session.delete(habit)
-        db.session.commit()
-        return redirect(url_for('dashboard'))
-    else:
-        pass
+    habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+    db.session.delete(habit)
+    db.session.commit()
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     app.run()
