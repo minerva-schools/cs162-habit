@@ -83,7 +83,6 @@ def dashboard():
 @app.route('/dashboard/add', methods=['POST'])
 @login_required
 def add_habit():
-    print("tits")
     habit = Habit(user_id=current_user.id, title=request.form['habit_name'], description=request.form['habit_description'])
     db.session.add(habit)
     db.session.commit()
