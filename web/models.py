@@ -31,7 +31,7 @@ class Habit(db.Model):
     active = db.Column(db.Boolean)
 
     def __repr__(self):
-        return "<Habit(id={}, user_id={}, title={})>".format(self.id, self.user_id, self.title)
+        return "<Habit(id={}, user_id={}, title={}, description={})>".format(self.id, self.user_id, self.title, self.description)
 
 class Log(db.Model):
     '''
