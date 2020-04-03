@@ -135,6 +135,34 @@ def complete_milestone(id): # user can mark a given milestone as "completed"
     return redirect(url_for('dashboard'))
 
 
+@app.route('/dashboard/<habit_id>')
+@login_required
+def dashboard_habit(habit_id):
+    #pull both Milestones and Logs
+    habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+    milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
+    logs = Log.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
+    return render_template('habit.html', habit=habit, milestones=milestones, logs=logs)
+
+@app.route('/dashboard/<habit_id>/edit', methods=['POST'])
+@login_required
+def edit_habit(habit_id):
+    #get habit being edited
+    habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+    habit.title = request.form['title']
+    habit.description = request.form['description']
+    db.session.add(habit)
+    db.session.commit()
+    return redirect(url_for('dashboard_habit', habit_id=habit_id))
+
+@app.route('/dashboard/<habit_id>/delete', methods=['POST'])
+@login_required
+def delete_habit(habit_id):
+    habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+    db.session.delete(habit)
+    db.session.commit()
+    return redirect(url_for('dashboard'))
+
 
 if __name__ == '__main__':
     app.run()

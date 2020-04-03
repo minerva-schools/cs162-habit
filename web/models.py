@@ -33,6 +33,7 @@ class Habit(db.Model):
     active = db.Column(db.Boolean)
 
     def __repr__(self):
+
         return "<Habit(id={}, user_id={}, title={}, description={}, date_created={},active={})>".format(
                 self.id,
                 self.user_id,
@@ -71,10 +72,12 @@ class Milestone(db.Model):
     __tablename__ = 'milestone'
 
     id = db.Column(db.Integer, primary_key=True)
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     habit_id  = db.Column(db.Integer, db.ForeignKey('habit.id'), nullable=False)
 
     title = db.Column(db.String(100), nullable=False)
+
     note = db.Column(db.String(500)) # milestone-specific comments, such as 'vocabulary session'.
     deadline = db.Column(db.Date, nullable=False) # deadline is mandatory to determine the score 
     user_succeeded = db.Column(db.Boolean, default=0) # whether the user performed the activity as planned
