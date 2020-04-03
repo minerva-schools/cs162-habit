@@ -105,5 +105,16 @@ def edit_habit(habit_id):
     else:
         pass
 
+@app.route('/dashboard/delete/<habit_id>', methods=['POST'])
+@login_required
+def delete_habit(habit_id):
+    if request.method == 'POST':
+        habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+        db.session.delete(habit)
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+    else:
+        pass
+
 if __name__ == '__main__':
     app.run()
