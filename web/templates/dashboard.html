@@ -3,24 +3,99 @@
 <head>
     <meta charset="utf-8" />
     <title>Dashboard</title>
+    <link rel='stylesheet' href='static/style.css'>
+    <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+    </style>
 </head>
+
 <body>
     <p>Hello {{user.username}}!</p>
     <p><a href="{{ url_for('logout') }}" class="navbar-item">Logout</a></p>
+    <p>Current score: {{user.score}}</p>
 
-    <h2>Add a New Habit</h2>
-    <form action="/dashboard/add" method="POST">
-        <h4>Habit Name</h4>
-        <input type="text" name="habit_name" value=""><br>
-        <h4>Habit Description</h4>
-        <input type="text" name="habit_description" value=""><br>
-        <input type="submit" value="Add Habit">
-    </form>
+     <div class="row">
+       <div class = "column">
+       <h2>Add a New Habit</h2>
+          <form action="/dashboard/add" method="POST">
+          <li>Habit Name
+          <input type="text" name="habit_name" value=""><br>
+          <li>Habit Description
+          <input type="text" name="habit_description" value=""><br><br>
+          <input type="submit" value="Add Habit">
+          </form>
+       </div>
 
-    <h2>Current Habits</h2>
-    {% for habit in habits %}
-        <li><a href="/dashboard/{{habit.id}}">{{ habit.title }}</a><br></li>
-    {% endfor %}
+       <div class = "column">
+         <h2>Start a Habit</h2>
+         <form action="/dashboard/start_habit" method="POST">
+         <select name="habit_id">
+          {% for habit in habits %}
+            {% if not habit.active  %}
+             <option value={{habit.id}}>{{habit.title}}</option>
+            # select the title of the habits to start
+            # send the id of the selected habits through the form
+            {% endif %}
+          {% endfor %}
+          </select><br><br>
+          <input type="submit" value="Start Habit">
+        </form>
+      </div>
+
+      <div class = "column">
+        <h2>Add a milestone</h2>
+        <form action="/dashboard/add_milestones" method="POST">
+        <select name="habit_started">
+        {% for habit in habits %}
+          {% if habit.active  %}
+            <option value={{habit.id}}>{{habit.title}}</option>
+          {% endif %}
+        {% endfor %}
+        </select><br><br>
+
+        <li>Milestone Title
+        <input type="text" name="title" value=""><br>
+        <li>Note
+        <input type="text" name="note" value=""><br>
+        <li>Deadline
+        <input type="date" name="deadline">
+        <input type="submit" value="Add Milestone">
+        </form>
+      </div>
+    </div>
+
+
+    <h2>Current Habits and Milestones</h2>
+
+    <table class = "table" style="width:100%">
+      <tr>
+        <th>Habit</th>
+        <th>Status</th>
+        <th>Milestones Remaining</th>
+      </tr>
+      {% for habit in habits %}
+      <tr>
+        <td><a href="/dashboard/{{habit.id}}">{{ habit.title }}</a></td>
+        <td>{% if habit.active == 1 %} Active
+            {% else %} Passive {% endif %}</td>
+        <td>
+        {% for milestone in milestones %}
+          {% if milestone.habit_id == habit.id and milestone.user_succeeded==0 %}
+            <div class="column">
+            {{ milestone.title }}
+            <form action='{{url_for('complete_milestone', id=milestone.id)}}' method='POST'>
+            <button type='submit'>Completed</button>
+            </form>
+            </div>
+          {% endif %}
+        {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
 
 </body>
 </html>
