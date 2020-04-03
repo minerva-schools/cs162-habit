@@ -88,5 +88,22 @@ def add_habit():
     db.session.commit()
     return redirect(url_for('dashboard'))
 
+@app.route('/dashboard/edit/<habit_id>', methods=['GET', 'POST'])
+@login_required
+def edit_habit(habit_id):
+    if request.method == 'POST':
+        #get habit being edited
+        habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+        habit.title = request.form['title']
+        habit.description = request.form['description']
+        db.session.add(habit)
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+    elif request.method == 'GET':
+        habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+        return render_template('habit_edit.html', habit=habit)
+    else:
+        pass
+
 if __name__ == '__main__':
     app.run()

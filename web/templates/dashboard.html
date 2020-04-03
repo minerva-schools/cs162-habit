@@ -19,7 +19,7 @@
 
     <h2>Current Habits</h2>
     {% for habit in habits %}
-        <li>{{ habit.title }}<br>
+        <li>{{ habit.title }} – <a href="/dashboard/edit/{{habit.id}}">Edit</a>
     {% endfor %}
 
 </body>

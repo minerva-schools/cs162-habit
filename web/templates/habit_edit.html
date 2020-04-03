@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title> Edit Habit </title>
+    </head>
+
+    <form action="/dashboard/edit/{{habit.id}}" method='POST'>
+        <label for="title">Change Title:</label><br>
+        <input type="text" id="title" name="title" value="{{habit.title}}"><br>
+        <label for="description">Change Description:</label><br>
+        <input type="text" id="description" name="description" value="{{habit.description}}"><br><br>
+        <input type="submit" value="Submit">
+      </form> 
+</html>
