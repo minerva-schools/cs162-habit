@@ -93,6 +93,7 @@ def add_habit():
         return redirect(url_for('dashboard'))
     except:
         db.session.rollback() # would this silence potential errors?
+        return redirect(url_for('dashboard'))
 
 @app.route('/dashboard/start_habit', methods=['GET', 'POST'])
 @login_required
@@ -106,6 +107,7 @@ def start_habit():  # starting a habit = the habit becomes active
         return redirect(url_for('dashboard'))
     except:
         db.session.rollback()
+        return redirect(url_for('dashboard'))
 
 @app.route('/dashboard/add_milestones', methods=['GET', 'POST'])
 @login_required
