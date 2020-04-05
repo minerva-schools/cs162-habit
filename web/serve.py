@@ -113,6 +113,21 @@ def start_habit():  # starting a habit = the habit becomes active
     except:
         db.session.rollback()
         return redirect(url_for('dashboard'))
+        
+@app.route('/dashboard/stop_habit_<int:id>', methods=['GET', 'POST'])
+@login_required
+def stop_habit(id): # user can mark a given habit as "stopped"
+    # in the html, user stops the habit in the habits table on the dashboard, passing the habit id
+    try:
+        habit = Habit.query.filter_by(id=id).first() # find the selected habit in the db
+        habit.active = False # change the status of the habit to stop        
+        log_stop = Log(user_id=habit.user_id, habit_id = habit.id, date_logged = datetime.now(), log="{}: Habit stopped".format(datetime.now())) # log completetion status
+        db.session.add(log_stop)
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+    except:
+        db.session.rollback()
+        return redirect(url_for('dashboard'))
 
 @app.route('/dashboard/add_milestones', methods=['GET', 'POST'])
 @login_required
