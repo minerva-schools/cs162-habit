@@ -177,10 +177,16 @@ def edit_habit(habit_id):
 @app.route('/dashboard/<habit_id>/delete', methods=['POST'])
 @login_required
 def delete_habit(habit_id):
-    habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
-    db.session.delete(habit)
-    db.session.commit()
-    return redirect(url_for('dashboard'))
+    try:
+        habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+        Milestone.query.filter_by(habit_id=habit.id).delete() #delete all milestones for the habit
+        Log.query.filter_by(habit_id=habit.id).delete() #delete all logs for the habit
+        db.session.delete(habit)
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+    except:
+        db.session.rollback()
+        return redirect(url_for('dashboard'))
 
 @app.shell_context_processor
 def make_shell_context():
