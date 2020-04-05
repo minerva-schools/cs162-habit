@@ -80,7 +80,7 @@ class Milestone(db.Model):
 
     note = db.Column(db.String(500)) # milestone-specific comments, such as 'vocabulary session'.
     deadline = db.Column(db.Date, nullable=False) # deadline is mandatory to determine the score 
-    user_succeeded = db.Column(db.Boolean, default=0) # whether the user performed the activity as planned
+    user_succeeded = db.Column(db.Boolean, default=False) # whether the user performed the activity as planned
 
     def __repr__(self):
         return "<Milestone={}, habit_id={}, user_id={}, title={}, deadline={}, user_succeeded={})>".format(
