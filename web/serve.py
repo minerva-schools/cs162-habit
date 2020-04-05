@@ -89,6 +89,9 @@ def add_habit():
                       description=request.form['habit_description'],
                       date_created=datetime.now(), active=0)
         db.session.add(habit)
+        db.session.flush() #communicates the operations but does not make pemanent - so now habit as its assigned id
+        log_add = Log(user_id=habit.user_id, habit_id = habit.id, date_logged = habit.date_created, log="{}: Habit created".format(habit.date_created)) # add the first row to the habit's log - habit created
+        db.session.add(log_add)
         db.session.commit()
         return redirect(url_for('dashboard'))
     except:
@@ -102,6 +105,8 @@ def start_habit():  # starting a habit = the habit becomes active
         habit_id = request.form.get('habit_id')  # user selects the passive habit they want to start (selects the id)
         selected_habit = Habit.query.filter_by(user_id=current_user.id, id=habit_id).first() #get the corresponding habit from the db
         selected_habit.active = 1 # status of the selected habit is changed to 1 (active)
+        log_activate = Log(user_id=selected_habit.user_id, habit_id = selected_habit.id, date_logged = datetime.now(), log="{}: Habit activated".format(datetime.now())) # add a row to the habit's log indicating activation
+        db.session.add(log_activate)
         current_user.score += 5  # user gains 5 points when starting a habit
         db.session.commit()
         return redirect(url_for('dashboard'))
@@ -115,27 +120,39 @@ def set_milestones(): # function for the user to add milestone to active habits
     # asks the user info on the milestone to create:
     # mandatory: which habit it falls under, title and deadline of the milestone
     # optional: note about the milestone
-    milestone = Milestone(user_id=current_user.id, habit_id=request.form.get('habit_started'),
-                              title=request.form['title'], note=request.form['note'],
-                              deadline=datetime.strptime(request.form['deadline'], '%Y-%m-%d'))
-    db.session.add(milestone)
-    db.session.commit()
-    return redirect(url_for('dashboard'))
+    try:
+        milestone = Milestone(user_id=current_user.id, habit_id=request.form.get('habit_started'), title=request.form['title'], note=request.form['note'], deadline=datetime.strptime(request.form['deadline'], '%Y-%m-%d'))
+        db.session.add(milestone)
+        log_milestone_added = Log(user_id=current_user.id, habit_id = request.form.get('habit_started'), date_logged = datetime.now(), log="{}: Milestone '{}' set with deadline {}".format(datetime.now(),request.form['title'],request.form['deadline'])) # add a row to the habit's log for setting a milestone
+        db.session.add(log_milestone_added)
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+    except:
+        db.session.rollback()
+        return redirect(url_for('dashboard'))
 
 
 @app.route('/dashboard/complete_milestone_<int:id>', methods=['GET', 'POST'])
 @login_required
 def complete_milestone(id): # user can mark a given milestone as "completed"
     # in the html, user selects a milestone (by clicking a button that passes the milestone id)
-    milestone = Milestone.query.filter_by(id=id).first() # find the selected milestone in the db
-    milestone.user_succeeded = 1 # change the status of the milestone to completed
-    if milestone.deadline >= date.today(): # if finished on time, user gets 3 points
-        current_user.score += 3
-    elif milestone.deadline < date.today(): # if finished late, user gets 1 point
-        current_user.score += 1
-    db.session.commit()
-    return redirect(url_for('dashboard'))
-
+    try:
+        milestone = Milestone.query.filter_by(id=id).first() # find the selected milestone in the db
+        milestone.user_succeeded = True # change the status of the milestone to completed
+        if milestone.deadline >= date.today(): # if finished on time, user gets 3 points
+            current_user.score += 3
+            status = 'before the deadline!'
+        elif milestone.deadline < date.today(): # if finished late, user gets 1 point
+            current_user.score += 1
+            status = 'after the deadline :('
+        
+        log_milestone_completed = Log(user_id=milestone.user_id, habit_id = milestone.habit_id, date_logged = datetime.now(), log="{}: Milestone '{}' completed {}".format(datetime.now(),milestone.title,status)) # log completetion status
+        db.session.add(log_milestone_completed)
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+    except:
+        db.session.rollback()
+        return redirect(url_for('dashboard'))
 
 @app.route('/dashboard/<habit_id>')
 @login_required
@@ -165,6 +182,10 @@ def delete_habit(habit_id):
     db.session.commit()
     return redirect(url_for('dashboard'))
 
+@app.shell_context_processor
+def make_shell_context():
+    '''Allows to work with all objects directly in flask shell'''
+    return {'db': db, 'User': User, 'Habit': Habit, 'Milestone': Milestone, 'Log': Log}
 
 if __name__ == '__main__':
     app.run()
