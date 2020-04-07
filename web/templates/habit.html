@@ -26,7 +26,7 @@
     <h3>Milestones</h3>
     <a href="">Add Milestone</a>
     {% for milestone in milestones %}
-        <li>{{ milestone.title }}<br></li>
+        <li>{{ milestone.title }}, deadline: {{milestone.deadline}}<br></li>
     {% endfor %}
 
     <h3>Log</h3>

@@ -61,7 +61,12 @@
         <li>Note
         <input type="text" name="note" value=""><br>
         <li>Deadline
-        <input type="date" name="deadline">
+        <input type="date" name="deadline"><br>
+        <li>Recurring milestone? Insert desired number of milestones (1 if one-time):
+        <input type="text" name="num_milestones" value="1"> <br>
+        And the desired interval between consecutive milestones (0 if one-time):
+        <input type="text" name="delta" value="0"> days <br>
+
         <input type="submit" value="Add Milestone">
         </form>
       </div>
@@ -80,7 +85,7 @@
       <tr>
         <td><a href="/dashboard/{{habit.id}}">{{ habit.title }}</a></td>
         <td>{% if habit.active == 1 %} Active
-			<form action='{{url_for('stop_habit', id=habit.id)}}' method='POST'>
+            <form action='{{url_for('stop_habit', id=habit.id)}}' method='POST'>
             <button type='submit'>Stop</button>
             </form>
             {% else %} Inactive {% endif %}</td>

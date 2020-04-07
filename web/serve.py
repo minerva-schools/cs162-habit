@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
@@ -135,13 +135,23 @@ def set_milestones(): # function for the user to add milestone to active habits
     # asks the user info on the milestone to create:
     # mandatory: which habit it falls under, title and deadline of the milestone
     # optional: note about the milestone
+    
     try:
-        milestone = Milestone(user_id=current_user.id, habit_id=request.form.get('habit_started'), title=request.form['title'], note=request.form['note'], deadline=datetime.strptime(request.form['deadline'], '%Y-%m-%d'))
-        db.session.add(milestone)
-        log_milestone_added = Log(user_id=current_user.id, habit_id = request.form.get('habit_started'), date_logged = datetime.now(), log="{}: Milestone '{}' set with deadline {}".format(datetime.now(),request.form['title'],request.form['deadline'])) # add a row to the habit's log for setting a milestone
-        db.session.add(log_milestone_added)
+        num_milestones = int(request.form['num_milestones'])
+        original_deadline = datetime.strptime(request.form['deadline'], '%Y-%m-%d') # the user-set deadline
+        increment = timedelta(days=int(request.form['delta'])) # an increment to create recurring milestones
+        
+        # there should be some validation that the text in num_milestones is always a positive integer and increment
+        # is non-negative, I proceed assuming it's given for now. Also, veriy that the deadline is in the future.
+
+        for i in range(num_milestones):
+            milestone = Milestone(user_id=current_user.id, habit_id=request.form.get('habit_started'), title=request.form['title'], note=request.form['note'], deadline=original_deadline+i*increment) # create a milestone and add i increments to the deadline
+            db.session.add(milestone)
+            log_milestone_added = Log(user_id=current_user.id, habit_id = request.form.get('habit_started'), date_logged = datetime.now(), log="{}: Milestone '{}' set with deadline {}".format(datetime.now(),milestone.title, datetime.strftime(milestone.deadline, '%Y-%m-%d'))) # add a row to the habit's log for setting a milestone
+            db.session.add(log_milestone_added)
         db.session.commit()
         return redirect(url_for('dashboard'))
+    
     except:
         db.session.rollback()
         return redirect(url_for('dashboard'))
