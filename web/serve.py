@@ -65,38 +65,51 @@ def login():
 @app.route('/dashboard/<date>', methods=['GET', 'POST'])
 @login_required
 def dashboard(date):
-    habits = Habit.query.filter_by(user_id=current_user.id).all()
-    
     if request.method == 'GET':
-        return render_template(
-            'dashboard.html',
-            user=current_user,
-            date=date,
-            habits=habits)
+        '''
+        Add functionality for creating more logs for the user's habit
+        check_log_entries(date, current_user.id)
+
+        def check_log_entries(date, user_id):
+            magic
+        '''
+        
+        #query Logs table with user_id and current date
+        logs = Log.query.filter_by(user_id=current_user.id, date=datetime.strptime(date, '%Y-%m-%d')).all()
+
+        if not logs: #if habits is empty, possibly no logs for the habits
+            habits = Habit.query.filter_by(user_id=current_user.id).all()
+            if habits: #if there is habits, but no logs
+                for habit in habits:
+                    log = Log(
+                        user_id=current_user.id,
+                        habit_id=habit.id,
+                        date=datetime.strptime(date, '%Y-%m-%d')
+                    )
+                    db.session.add(log)
+                    db.session.commit()
+            
+        habit_log_iter = db.session.query(Habit, Log).filter(Habit.id == Log.habit_id, Log.date == datetime.strptime(date, '%Y-%m-%d')).all()
+
+        return render_template('dashboard.html', user=current_user, date=date, habits=habit_log_iter)
+
     if request.method == 'POST':
         date = datetime.strptime(date, '%Y-%m-%d')
-        if request.form.get('Yesterday'):
-            #decrease day by one
-            yesterday = date - timedelta(days=1)
-            return render_template(
-                'dashboard.html',
-                user=current_user,
-                date=yesterday.strftime('%Y-%m-%d'),
-                habits=habits)
-        elif request.form.get('Tomorrow'):
-            #increase day by one
-            tomorrow = date + timedelta(days=1)
-            return render_template(
-                'dashboard.html',
-                user=current_user,
-                date=tomorrow.strftime('%Y-%m-%d'),
-                habits=habits)
-        else:
-            return render_template(
-                'dashboard.html',
-                user=current_user,
-                date=date,
-                habits=habits)
+        if request.form.get('increment') == 'yesterday':
+            date = date - timedelta(days=1)
+        elif request.form.get('increment') == 'tomorrow':
+            date = date + timedelta(days=1)
+        elif request.form.get('increment') == 'today':
+            date = date.today()
+
+        elif request.form.get('done'):
+
+            log = Log.query.filter_by(user_id=current_user.id, id=request.form.get('done')).first()
+            log.status = True
+            db.session.add(log)
+            db.session.commit()
+
+        return redirect(url_for('dashboard', date=datetime.strftime(date, '%Y-%m-%d')))
 
 @app.route('/add_habit', methods=['GET', 'POST'])
 @login_required
@@ -104,7 +117,6 @@ def add_habit():
     if request.method == 'GET':
         return render_template('add_habit.html', user=current_user)
     elif request.method == 'POST':
-        print(request.form.get('title'))
         habit = Habit(
             user_id=current_user.id,
             title=request.form.get('title'),
@@ -112,9 +124,32 @@ def add_habit():
             frequency=request.form.get('frequency'),
             active=True
         )
+
         db.session.add(habit)
+        db.session.flush()
+
+        log = Log(
+            user_id=current_user.id,
+            habit_id=habit.id,
+            date=date.today()
+        )
+
+        db.session.add(log)
+
         db.session.commit()
         return redirect(url_for('dashboard', date=date.today()))
+
+@app.route('/habit/<habit_id>')
+@login_required
+def habit(habit_id):
+    habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+    return render_template('habit.html', habit=habit)
+
+@app.route('/habit/<habit_id>/edit')
+@login_required
+def edit_habit(habit_id):
+    habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
+    return render_template('edit_habit.html', habit=habit)
 
 @app.route('/logout')
 @login_required

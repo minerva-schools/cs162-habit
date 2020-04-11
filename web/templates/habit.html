@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Create Habit</title>
+</head>
+
+<body>
+    <p>
+        <h3> Title </h3>
+            {{habit.title}}
+
+        <h3> Description </h3>
+            {{habit.description}}
+
+        <h3> Frequency </h3>
+            {{habit.frequency}}
+    </p>
+
+    <p>
+        <a href="{{ url_for('edit_habit', habit_id=habit.id) }}"> Edit Habit </a>
+    </p>
+    
+</body>
+</html>

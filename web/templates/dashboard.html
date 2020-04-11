@@ -16,11 +16,9 @@
         <h2> {{ date }} </h2>
 
         <form action="{{ url_for('dashboard', date=date) }}" method='POST'>
-            <input type="submit" name="Yesterday" value="Yesterday">
-        </form>
-
-        <form action="{{ url_for('dashboard', date=date) }}" method='POST'>
-            <input type="submit" name="Tomorrow" value="Tomorrow">
+            <input type="submit" name="increment" value="yesterday">
+            <input type="submit" name="increment" value="today">
+            <input type="submit" name="increment" value="tomorrow">
         </form>
     </p>
 
@@ -28,8 +26,23 @@
         <h2> Habits </h2>
 
         <h3> To Do </h3>
-            {% for habit in habits %}
-                <a href=""> {{habit.title}} </a><br>
+            <form action="" method='POST'>
+                {% for habit, log in habits %}
+                    {% if not log.status %}
+
+                    <input type="radio" id="{{log.id}}" name="done" value="{{log.id}}">
+                    <label for="{{log.id}}"><a href="{{ url_for('habit', habit_id=habit.id) }}"> {{habit.title}} </a><br></label>
+                    
+                    {% endif %}
+                {% endfor %}
+                <input type="submit" name="done" value="Check off">
+            </form>
+        
+        <h3> Done </h3>
+            {% for habit, log in habits %}
+                {% if log.status %}
+                    <a href="{{ url_for('habit', habit_id=habit.id) }}"><s> {{habit.title}} </s></a><br>
+                {% endif %}
             {% endfor %}
     </p>
     

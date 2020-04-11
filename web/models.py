@@ -28,7 +28,8 @@ class Log(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     habit_id = db.Column(db.Integer, db.ForeignKey('habit.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     date = db.Column(db.DateTime)
-    status = db.Column(db.Boolean)
+    status = db.Column(db.Boolean, default=False)
 
 db.create_all()
