@@ -30,29 +30,29 @@
                 {% for habit, log in habits %}
                     {% if not log.status %}
 
-                    <input type="radio" id="{{log.id}}" name="done" value="{{log.id}}">
+                    <input type="checkbox" id="{{log.id}}" name="done" value="{{log.id}}">
                     <label for="{{log.id}}"><a href="{{ url_for('habit', habit_id=habit.id) }}"> {{habit.title}} </a><br></label>
-                    
+
                     {% endif %}
                 {% endfor %}
-                <input type="submit" name="done" value="Check off">
+                <input type="submit" name="Submit" value="Check off">
             </form>
-        
+
         <h3> Done </h3>
             <form method='POST'>
                 {% for habit, log in habits %}
                     {% if log.status %}
-                        <input type="radio" id="{{log.id}}" name="undo-done" value="{{log.id}}">
+                        <input type="checkbox" id="{{log.id}}" name="undo-done" value="{{log.id}}">
                             <s><label for="{{log.id}}"><a href="{{ url_for('habit', habit_id=habit.id) }}"> {{habit.title}} </a><br></label></s>
                     {% endif %}
                 {% endfor %}
-                <input type="submit" name="undo-done" value="Undo checkoff">
+                <input type="submit" name="Submit" value="Undo checkoff">
             </form>
-        
+
             <h2> Passive Habits </h2>
 
             <a href="{{url_for('archive')}}"> ARCHIVE </a>
     </p>
-    
+
 </body>
 </html>

@@ -76,12 +76,12 @@ def dashboard(current_date):
         This should:
             1. Find all current active habits created on today or earlier. These are all the habits that should have logs on the current day.
             2. Find all the logs for the found habits.
-            3. 
+            3.
 
         '''
 
         habits = Habit.query.filter_by(user_id=current_user.id, active=True).filter(Habit.date_created <= datetime.strptime(current_date, '%Y-%m-%d')).all()
-        
+
         if habits:
             for habit in habits:
                 log = Log.query.filter_by(habit_id=habit.id, date=datetime.strptime(current_date, '%Y-%m-%d')).all()
@@ -108,16 +108,18 @@ def dashboard(current_date):
             current_date = current_date.today()
 
         elif request.form.get('done'):
-            log = Log.query.filter_by(user_id=current_user.id, id=request.form.get('done'), date=current_date).first()
-            log.status = True
-            db.session.add(log)
-            db.session.commit()
-        
+            for checked_off_id in request.form.getlist('done'):
+                log = Log.query.filter_by(user_id=current_user.id, id=checked_off_id, date=current_date).first()
+                log.status = True
+                db.session.add(log)
+                db.session.commit()
+
         elif request.form.get('undo-done'):
-            log = Log.query.filter_by(user_id=current_user.id, id=request.form.get('undo-done')).filter(Log.date.like(current_date)).first()
-            log.status = False
-            db.session.add(log)
-            db.session.commit()
+            for checked_off_id in request.form.getlist('undo-done'):
+                log = Log.query.filter_by(user_id=current_user.id, id=checked_off_id).filter(Log.date.like(current_date)).first()
+                log.status = False
+                db.session.add(log)
+                db.session.commit()
 
         return redirect(url_for('dashboard', current_date=datetime.strftime(current_date, '%Y-%m-%d')))
 
