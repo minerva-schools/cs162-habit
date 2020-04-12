@@ -23,16 +23,7 @@ def signup():
     elif request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        
-        if username == '':
-            flash('Please insert a username.')
-            return redirect(url_for('signup'))
-        
-        if password == '':
-            flash('Please insert a password.')
-            return redirect(url_for('signup'))
 
-        
         user = User.query.filter_by(username=username).first() # check if a user exists
 
         if user: # if a user is found, try again
@@ -145,33 +136,14 @@ def set_milestones(): # function for the user to add milestone to active habits
     # mandatory: which habit it falls under, title and deadline of the milestone
     # optional: note about the milestone
     
-    # Input validation (I'm sure there's a more compact way to do it, but this works for now
-    if not request.form['num_milestones'].isnumeric(): # accounts for negative numbers as well
-        flash('The number of milestones must be a positive number')
-        return redirect(url_for('dashboard'))
-    
-    if not request.form['delta'].isnumeric():
-        flash('The interval between milestones must be a non-negative number')
-        return redirect(url_for('dashboard'))
-        
-    if int(request.form['num_milestones']) == 0:
-        flash('The number of milestones must be positive')
-        return redirect(url_for('dashboard'))
-        
-    if int(request.form['delta']) == 0 and int(request.form['num_milestones']) > 1:
-        flash('The interval between milestones must be positive for a recurring milestone')
-        return redirect(url_for('dashboard'))
-    
-    num_milestones = int(request.form['num_milestones'])
-    original_deadline = datetime.strptime(request.form['deadline'], '%Y-%m-%d') # the user-set deadline
-    increment = timedelta(days=int(request.form['delta'])) # an increment to create recurring milestones
-    
-    # veriy that the deadline has not already passed.
-    if original_deadline.date() < datetime.now().date():
-        flash('The deadline cannot be in the past!')
-        return redirect(url_for('dashboard'))
-    
     try:
+        num_milestones = int(request.form['num_milestones'])
+        original_deadline = datetime.strptime(request.form['deadline'], '%Y-%m-%d') # the user-set deadline
+        increment = timedelta(days=int(request.form['delta'])) # an increment to create recurring milestones
+        
+        # there should be some validation that the text in num_milestones is always a positive integer and increment
+        # is non-negative, I proceed assuming it's given for now. Also, veriy that the deadline is in the future.
+
         for i in range(num_milestones):
             milestone = Milestone(user_id=current_user.id, habit_id=request.form.get('habit_started'), title=request.form['title'], note=request.form['note'], deadline=original_deadline+i*increment) # create a milestone and add i increments to the deadline
             db.session.add(milestone)
