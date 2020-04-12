@@ -39,7 +39,7 @@ def signup():
 
         return redirect(url_for('login'))
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def home():
     return redirect(url_for('dashboard', current_date=date.today()))
 
@@ -70,19 +70,28 @@ def login():
 @login_required
 def dashboard(current_date):
     if request.method == 'GET':
-        #query Logs table with user_id and current date
-        logs = Log.query.filter_by(user_id=current_user.id, date=datetime.strptime(current_date, '%Y-%m-%d')).all()
+        '''
+        Logic to find the logs that should be displayed on the dashboard for the given day.
 
-        if not logs: #if habits is empty, possibly no logs for the habits
-            habits = Habit.query.filter_by(user_id=current_user.id).all()
-            if habits: #if there is habits, but no logs
-                for habit in habits:
-                    log = Log(
+        This should:
+            1. Find all current active habits created on today or earlier. These are all the habits that should have logs on the current day.
+            2. Find all the logs for the found habits.
+            3. 
+
+        '''
+
+        habits = Habit.query.filter_by(user_id=current_user.id, active=True).filter(Habit.date_created <= datetime.strptime(current_date, '%Y-%m-%d')).all()
+        
+        if habits:
+            for habit in habits:
+                log = Log.query.filter_by(habit_id=habit.id, date=datetime.strptime(current_date, '%Y-%m-%d')).all()
+                if not log:
+                    log_ = Log(
                         user_id=current_user.id,
                         habit_id=habit.id,
                         date=datetime.strptime(current_date, '%Y-%m-%d')
                     )
-                    db.session.add(log)
+                    db.session.add(log_)
                     db.session.commit()
 
         habit_log_iter = db.session.query(Habit, Log).filter(Habit.id == Log.habit_id, Log.date == datetime.strptime(current_date, '%Y-%m-%d')).all()
