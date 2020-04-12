@@ -10,6 +10,9 @@ class User(UserMixin,db.Model):
     username = db.Column(db.String(200), unique=True)
     password = db.Column(db.String(200))
 
+    def __repr__(self):
+        return "<User(id={}, username={}, password={})>".format(self.id, self.username, self.password)
+
 class Habit(db.Model):
 
     __tablename__ = 'habit'
@@ -22,6 +25,16 @@ class Habit(db.Model):
     frequency = db.Column(db.String(100), default='Daily')
     active = db.Column(db.Boolean)
 
+    def __repr__(self):
+        return "<Habit(id={}, user_id={}, title={}, description={}, date_created={},frequency={},active={})>".format(
+                self.id,
+                self.user_id,
+                self.title,
+                self.description,
+                self.date_created.strftime("%Y-%m-%d %H:%M"),
+                self.frequency,
+                self.active)
+
 class Log(db.Model):
 
     __tablename__ = 'log'
@@ -31,5 +44,14 @@ class Log(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     date = db.Column(db.DateTime)
     status = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return "<Log(id={}, habit_id={}, user_id={}, date={}, status={})>".format(
+            self.id,
+            self.habit_id,
+            self.user_id,
+            self.date,
+            self.status
+        )
 
 db.create_all()
