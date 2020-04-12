@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Sign Up</title>
+</head>
+<body>
+    <h1> Sign Up </h1>
+    <form method="POST" action="/signup">
+        <input type="username" name="username" placeholder="Your Username" autofocus="">
+        <input type="password" name="password" placeholder="Your Password">
+    <button type='submit' >Sign up</button>
+    </form>
+	<p>
+	{% with messages = get_flashed_messages() %}
+	{% if messages %}
+	{{ messages[0] }}. Go to <a href="{{ url_for('login') }}">login page</a>.
+	{% endif %}
+	{% endwith %}
+	</p>
+</body>
+</html>
