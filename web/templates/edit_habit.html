@@ -20,10 +20,15 @@
         <label for="daily">daily</label><br>
         <input type="submit" value="edit">
     </form>
+
     <p>
         <form action="" method="POST">
             <input type="submit" name="delete" value="delete">
-            <input type="submit" value="archive">
+            {% if habit.active %}
+                <input type="submit" name="archive" value="archive">
+            {% else %}
+                <input type="submit" name="unarchive" value="unarchive">
+            {% endif %}
         </form>
     </p>
 </body>

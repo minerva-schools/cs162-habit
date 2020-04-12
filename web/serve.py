@@ -166,6 +166,29 @@ def edit_habit(habit_id):
 
         return redirect(url_for('habit', habit_id=habit.id))
         
+        elif request.form.get('archive'):
+            habit.active = False
+
+            db.session.add(habit)
+            db.session.commit()
+
+            return redirect(url_for('habit', habit_id=habit.id))
+        
+        elif request.form.get('unarchive'):
+            habit.active = True
+
+            db.session.add(habit)
+            db.session.commit()
+
+            return redirect(url_for('habit', habit_id=habit.id))
+        
+        elif request.form.get('delete'):
+            Log.query.filter_by(habit_id=habit.id).delete()
+
+            db.session.delete(habit)
+            db.session.commit()
+
+            return redirect(url_for('dashboard', current_date=date.today()))
 
 @app.route('/logout')
 @login_required
