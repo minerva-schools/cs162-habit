@@ -39,7 +39,7 @@ def signup():
 
         return redirect(url_for('login'))
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -61,10 +61,6 @@ def login():
         # if the username exists and the password was correct, go to the user's "dashboard"
         login_user(user, remember=remember)
         return redirect(url_for('dashboard', current_date=date.today()))
-
-@app.route('/')
-def home():
-    return redirect(url_for('dashboard', current_date=date.today()))
 
 @app.route('/dashboard/<current_date>', methods=['GET', 'POST'])
 @login_required
@@ -148,7 +144,7 @@ def edit_habit(habit_id):
             db.session.commit()
 
             return redirect(url_for('habit', habit_id=habit.id))
-        
+
         elif request.form.get('archive'):
             habit.active = False
 
@@ -156,7 +152,7 @@ def edit_habit(habit_id):
             db.session.commit()
 
             return redirect(url_for('habit', habit_id=habit.id))
-        
+
         elif request.form.get('unarchive'):
             habit.active = True
 
@@ -164,7 +160,7 @@ def edit_habit(habit_id):
             db.session.commit()
 
             return redirect(url_for('habit', habit_id=habit.id))
-        
+
         elif request.form.get('delete'):
             Log.query.filter_by(habit_id=habit.id).delete()
 
@@ -172,7 +168,7 @@ def edit_habit(habit_id):
             db.session.commit()
 
             return redirect(url_for('dashboard', current_date=date.today()))
-        
+
 
 @app.route('/logout')
 @login_required

@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1> Login </h1>
-    <form method="POST" action="/login">
+    <form method="POST" action="{{ url_for('login') }}">
         <input type="username" name="username" placeholder="Your Username" autofocus="">
         <input type="password" name="password" placeholder="Your Password">
         <label class="checkbox">
@@ -22,7 +22,7 @@
 	{% endif %}
 	{% endwith %}
     </p>
-    
+
     <a href=" {{ url_for('signup') }}">Sign Up</a>
 </body>
 </html>
