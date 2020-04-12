@@ -145,11 +145,23 @@ def habit(habit_id):
     habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
     return render_template('habit.html', habit=habit)
 
-@app.route('/habit/<habit_id>/edit')
+@app.route('/habit/<habit_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_habit(habit_id):
     habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
-    return render_template('edit_habit.html', habit=habit)
+    if request.method == 'GET':
+        return render_template('edit_habit.html', habit=habit)
+    elif request.method == 'POST':
+        if request.form.get('title') or request.form.get('description') or request.form.get('frequency'):
+            habit.title = request.form.get('title')
+            habit.description = request.form.get('description')
+            habit.frequency = request.form.get('frequency')
+
+            db.session.add(habit)
+            db.session.commit()
+
+        return redirect(url_for('habit', habit_id=habit.id))
+        
 
 @app.route('/logout')
 @login_required

@@ -9,5 +9,22 @@
     <p>
         This is the habit edit page
     </p>
+
+    <form action="" method="POST">
+        <label> Title </label><br>
+        <input type="text" name="title" value="{{habit.title}}"><br>
+        <label> Description </label><br>
+        <input type="text" name="description" value="{{habit.description}}"><br>
+        <label> Frequency </label><br>
+        <input type="radio" id="daily" name="frequency" value="daily">
+        <label for="daily">daily</label><br>
+        <input type="submit" value="edit">
+    </form>
+    <p>
+        <form action="" method="POST">
+            <input type="submit" name="delete" value="delete">
+            <input type="submit" value="archive">
+        </form>
+    </p>
 </body>
 </html>
