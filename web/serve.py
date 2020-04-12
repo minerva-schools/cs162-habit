@@ -94,7 +94,7 @@ def dashboard(current_date):
                     db.session.add(log_)
                     db.session.commit()
 
-        habit_log_iter = db.session.query(Habit, Log).filter(Habit.id == Log.habit_id, Log.date == datetime.strptime(current_date, '%Y-%m-%d')).all()
+        habit_log_iter = db.session.query(Habit, Log).filter(Habit.id == Log.habit_id, Log.date == datetime.strptime(current_date, '%Y-%m-%d'), Habit.active == True).all()
 
         return render_template('dashboard.html', user=current_user, date=current_date, habits=habit_log_iter)
 
@@ -197,6 +197,12 @@ def edit_habit(habit_id):
 
             return redirect(url_for('dashboard', current_date=date.today()))
 
+@app.route('/archive')
+@login_required
+def archive():
+    habits = Habit.query.filter_by(user_id=current_user.id, active=False).all()
+    print(habits)
+    return render_template("archive.html", habits=habits)
 
 @app.route('/logout')
 @login_required

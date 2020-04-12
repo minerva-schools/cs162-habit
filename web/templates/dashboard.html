@@ -23,7 +23,7 @@
     </p>
 
     <p>
-        <h2> Habits </h2>
+        <h2> Active Habits </h2>
 
         <h3> To Do </h3>
             <form method='POST'>
@@ -48,6 +48,10 @@
                 {% endfor %}
                 <input type="submit" name="undo-done" value="Undo checkoff">
             </form>
+        
+            <h2> Passive Habits </h2>
+
+            <a href="{{url_for('archive')}}"> ARCHIVE </a>
     </p>
     
 </body>
