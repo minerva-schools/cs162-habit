@@ -60,7 +60,7 @@ def login():
 
         # if the username exists and the password was correct, go to the user's "dashboard"
         login_user(user, remember=remember)
-        return redirect(url_for('dashboard', date=date.today()))
+        return redirect(url_for('dashboard', current_date=date.today()))
 
 @app.route('/dashboard/<current_date>', methods=['GET', 'POST'])
 @login_required
