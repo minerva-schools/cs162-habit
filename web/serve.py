@@ -108,9 +108,14 @@ def dashboard(current_date):
             current_date = current_date.today()
 
         elif request.form.get('done'):
-
-            log = Log.query.filter_by(user_id=current_user.id, id=request.form.get('done')).first()
+            log = Log.query.filter_by(user_id=current_user.id, id=request.form.get('done'), date=current_date).first()
             log.status = True
+            db.session.add(log)
+            db.session.commit()
+        
+        elif request.form.get('undo-done'):
+            log = Log.query.filter_by(user_id=current_user.id, id=request.form.get('undo-done')).filter(Log.date.like(current_date)).first()
+            log.status = False
             db.session.add(log)
             db.session.commit()
 

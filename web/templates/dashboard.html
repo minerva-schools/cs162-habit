@@ -26,7 +26,7 @@
         <h2> Habits </h2>
 
         <h3> To Do </h3>
-            <form action="" method='POST'>
+            <form method='POST'>
                 {% for habit, log in habits %}
                     {% if not log.status %}
 
@@ -39,11 +39,15 @@
             </form>
         
         <h3> Done </h3>
-            {% for habit, log in habits %}
-                {% if log.status %}
-                    <a href="{{ url_for('habit', habit_id=habit.id) }}"><s> {{habit.title}} </s></a><br>
-                {% endif %}
-            {% endfor %}
+            <form method='POST'>
+                {% for habit, log in habits %}
+                    {% if log.status %}
+                        <input type="radio" id="{{log.id}}" name="undo-done" value="{{log.id}}">
+                            <s><label for="{{log.id}}"><a href="{{ url_for('habit', habit_id=habit.id) }}"> {{habit.title}} </a><br></label></s>
+                    {% endif %}
+                {% endfor %}
+                <input type="submit" name="undo-done" value="Undo checkoff">
+            </form>
     </p>
     
 </body>
