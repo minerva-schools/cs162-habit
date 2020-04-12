@@ -54,7 +54,6 @@ class Log(db.Model):
             self.habit_id,
             self.user_id,
             self.date,
-            self.status
-        )
+            self.status)
 
 db.create_all()
