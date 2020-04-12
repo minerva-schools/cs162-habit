@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Add Habit</title>
+</head>
+
+<body>
+    <h2>
+        Add Habit
+    </h2>
+
+    <p>
+        <form action="{{ url_for('add_habit') }}" method='POST'>
+            <label> Title </label><br>
+            <input type="text" name="title"><br>
+            <label> Description </label><br>
+            <input type="text" name="description"><br>
+            <label> Frequency </label><br>
+            <input type="radio" id="daily" name="frequency" value="daily" required>
+            <label for="daily">Daily</label><br>
+
+            <!-- add additional functionality for weekly / monthly habits
+
+            <input type="radio" id="weekly" name="frequency" value="weekly" required>
+            <label for="weekly">Weekly</label><br>
+            <input type="radio" id="monthly" name="frequency" value="monthly" required>
+            <label for="monthly">Monthly</label>
+
+            -->
+
+            <input type="submit" value="Submit">
+
+
+        </form>
+    </p>
+</body>
+</html>

@@ -2,40 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Dashboard</title>
+    <title>Create Habit</title>
 </head>
+
 <body>
-    <a href="/dashboard">Back</a>
-    <h2>{{ habit.title }}</h2>
-    Description: {{ habit.description }} <br>
+    <p>
+        <h3> Title </h3>
+            {{habit.title}}
 
-    <h3>Edit Habit</h3>
-    <form action="/dashboard/{{habit.id}}/edit" method='POST'>
-        <label for="title">Change Title:</label><br>
-        <input type="text" id="title" name="title" value="{{habit.title}}"><br>
-        <label for="description">Change Description:</label><br>
-        <input type="text" id="description" name="description" value="{{habit.description}}"><br><br>
-        <input type="submit" value="Confirm Changes">
-    </form>
+        <h3> Description </h3>
+            {{habit.description}}
 
-    <h3>Delete Habit</h3>
-    <form action="/dashboard/{{habit.id}}/delete" method='POST'>
-        <input type="submit" value="Delete">
-    </form>
+        <h3> Frequency </h3>
+            {{habit.frequency}}
 
-    <h3>Milestones</h3>
-    <a href="">Add Milestone</a>
-    {% for milestone in milestones %}
-        <li>{{ milestone.title }}, deadline: {{milestone.deadline}}<br></li>
-    {% endfor %}
+        <h3> Date Created </h3>
+            {{habit.date_created}}
+        
+        <h3> Active </h3>
+            {{habit.active}}
+    </p>
 
-    <h3>Log</h3>
-    <a href="">Add Log Entry</a>
-    {% for log in logs %}
-        <li>{{ log.log }}<br></li>
-    {% endfor %}
-
-
-
+    <p>
+        <a href="{{ url_for('edit_habit', habit_id=habit.id) }}"> Edit Habit </a>
+    </p>
+    
 </body>
 </html>

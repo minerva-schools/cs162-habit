@@ -3,6 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_login import LoginManager
 
+# this might solve the problem of os.getenv 
+from dotenv import load_dotenv
+load_dotenv()
+
+
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
