@@ -40,6 +40,10 @@ def signup():
         return redirect(url_for('login'))
 
 @app.route('/', methods=['GET', 'POST'])
+def home():
+    return redirect(url_for('dashboard', current_date=date.today()))
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -73,8 +77,6 @@ def dashboard(current_date):
             habits = Habit.query.filter_by(user_id=current_user.id).all()
             if habits: #if there is habits, but no logs
                 for habit in habits:
-                    print(habit.date_created)
-                    print(datetime.today())
                     log = Log(
                         user_id=current_user.id,
                         habit_id=habit.id,
