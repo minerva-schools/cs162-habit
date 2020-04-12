@@ -7,6 +7,10 @@ import os
 from web import app, db, login_manager
 from .models import User, Habit, Log
 
+@app.route('/',  methods=['POST', 'GET'])
+def home():
+    return redirect(url_for('login'))
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'GET':
@@ -14,16 +18,16 @@ def signup():
     elif request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        
+
         if username == '':
             flash('Please insert a username.')
             return redirect(url_for('signup'))
-        
+
         if password == '':
             flash('Please insert a password.')
             return redirect(url_for('signup'))
 
-        
+
         user = User.query.filter_by(username=username).first() # check if a user exists
 
         if user: # if a user is found, try again
@@ -73,7 +77,7 @@ def dashboard(date):
         def check_log_entries(date, user_id):
             magic
         '''
-        
+
         #query Logs table with user_id and current date
         logs = Log.query.filter_by(user_id=current_user.id, date=datetime.strptime(date, '%Y-%m-%d')).all()
 
@@ -88,7 +92,7 @@ def dashboard(date):
                     )
                     db.session.add(log)
                     db.session.commit()
-            
+
         habit_log_iter = db.session.query(Habit, Log).filter(Habit.id == Log.habit_id, Log.date == datetime.strptime(date, '%Y-%m-%d')).all()
 
         return render_template('dashboard.html', user=current_user, date=date, habits=habit_log_iter)
