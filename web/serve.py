@@ -60,7 +60,7 @@ def login():
 
         # if the username exists and the password was correct, go to the user's "dashboard"
         login_user(user, remember=remember)
-        return redirect(url_for('dashboard', date=date.today()))
+        return redirect(url_for('dashboard', current_date=date.today()))
 
 @app.route('/')
 def home():
@@ -70,24 +70,12 @@ def home():
 @login_required
 def dashboard(current_date):
     if request.method == 'GET':
-        #query Logs table with user_id and current date
-        logs = Log.query.filter_by(user_id=current_user.id, date=datetime.strptime(current_date, '%Y-%m-%d')).all()
-
-        if not logs: #if habits is empty, possibly no logs for the habits
-            habits = Habit.query.filter_by(user_id=current_user.id).all()
-            if habits: #if there is habits, but no logs
-                for habit in habits:
-                    print(habit.date_created)
-                    print(datetime.today())
-                    log = Log(
-                        user_id=current_user.id,
-                        habit_id=habit.id,
-                        date=datetime.strptime(current_date, '%Y-%m-%d')
-                    )
-                    db.session.add(log)
-                    db.session.commit()
-
+        #build logs for active habits that don't have a log for that current day
         habit_log_iter = db.session.query(Habit, Log).filter(Habit.id == Log.habit_id, Log.date == datetime.strptime(current_date, '%Y-%m-%d')).all()
+
+        habits_without_logs = db.session.query(Habit, Log).filter(
+            Habit.id == Log.habit_id,
+            )
 
         return render_template('dashboard.html', user=current_user, date=current_date, habits=habit_log_iter)
 
