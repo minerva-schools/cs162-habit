@@ -15,14 +15,13 @@ def signup():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        if username == '':
+        if username == '': #if username is empty
             flash('Please insert a username.')
             return redirect(url_for('signup'))
 
-        if password == '':
+        if password == '': #if password is empty
             flash('Please insert a password.')
             return redirect(url_for('signup'))
-
 
         user = User.query.filter_by(username=username).first() # check if a user exists
 
@@ -39,7 +38,7 @@ def signup():
 
         return redirect(url_for('login'))
 
-@app.route('/')
+@app.route('/') #redirect home route
 def home():
     return redirect(url_for('dashboard', current_date=date.today()))
 
@@ -62,7 +61,7 @@ def login():
             flash('Incorrect password')
             return redirect(url_for('login'))
 
-        # if the username exists and the password was correct, go to the user's "dashboard"
+        # if the username exists and the password was correct, go to the user's "dashboard" for today
         login_user(user, remember=remember)
         return redirect(url_for('dashboard', current_date=date.today()))
 
@@ -70,30 +69,23 @@ def login():
 @login_required
 def dashboard(current_date):
     if request.method == 'GET':
-        '''
-        Logic to find the logs that should be displayed on the dashboard for the given day.
-
-        This should:
-            1. Find all current active habits created on today or earlier. These are all the habits that should have logs on the current day.
-            2. Find all the logs for the found habits.
-            3.
-
-        '''
-
+        #find all active habits for the user that were created before or on current_date
         habits = Habit.query.filter_by(user_id=current_user.id, active=True).filter(Habit.date_created <= datetime.strptime(current_date, '%Y-%m-%d')).all()
 
-        if habits:
+        if habits: #if they are habits
             for habit in habits:
-                log = Log.query.filter_by(habit_id=habit.id, date=datetime.strptime(current_date, '%Y-%m-%d')).all()
-                if not log:
-                    log_ = Log(
+                #check if no log exists for the current_date
+                if not Log.query.filter_by(habit_id=habit.id, date=datetime.strptime(current_date, '%Y-%m-%d')).first():
+                    #if no log exists, add a log
+                    log = Log(
                         user_id=current_user.id,
                         habit_id=habit.id,
                         date=datetime.strptime(current_date, '%Y-%m-%d')
                     )
-                    db.session.add(log_)
+                    db.session.add(log)
                     db.session.commit()
 
+        #returns a habit, log iterable of all the logs for the current_date
         habit_log_iter = db.session.query(Habit, Log).filter(Habit.id == Log.habit_id, Log.date == datetime.strptime(current_date, '%Y-%m-%d'), Habit.active == True).all()
 
         #how many habits were completed, how many habits were not
@@ -107,21 +99,21 @@ def dashboard(current_date):
 
     if request.method == 'POST':
         current_date = datetime.strptime(current_date, '%Y-%m-%d')
-        if request.form.get('increment') == 'yesterday':
+        if request.form.get('increment') == 'yesterday': #decrease current_date by one
             current_date = current_date - timedelta(days=1)
-        elif request.form.get('increment') == 'tomorrow':
+        elif request.form.get('increment') == 'tomorrow': #increase current_date by one
             current_date = current_date + timedelta(days=1)
-        elif request.form.get('increment') == 'today':
+        elif request.form.get('increment') == 'today': #return to today
             current_date = current_date.today()
 
-        elif request.form.get('done'):
+        elif request.form.get('done'): #check off habits for current_date
             for checked_off_id in request.form.getlist('done'):
                 log = Log.query.filter_by(user_id=current_user.id, id=checked_off_id, date=current_date).first()
                 log.status = True
                 db.session.add(log)
                 db.session.commit()
 
-        elif request.form.get('undo-done'):
+        elif request.form.get('undo-done'): #uncheck habits for current_date
             for checked_off_id in request.form.getlist('undo-done'):
                 log = Log.query.filter_by(user_id=current_user.id, id=checked_off_id).filter(Log.date.like(current_date)).first()
                 log.status = False
@@ -136,6 +128,9 @@ def add_habit():
     if request.method == 'GET':
         return render_template('add_habit.html', user=current_user)
     elif request.method == 'POST':
+        #TODO: this needs to be a transaction with a db.session.rollback given an exception.
+
+        #adds a habit
         habit = Habit(
             user_id=current_user.id,
             title=request.form.get('title'),
@@ -146,8 +141,9 @@ def add_habit():
         )
 
         db.session.add(habit)
-        db.session.flush()
+        db.session.flush() #staging
 
+        #adds a log with the current habit's id
         log = Log(
             user_id=current_user.id,
             habit_id=habit.id,
@@ -156,7 +152,7 @@ def add_habit():
 
         db.session.add(log)
 
-        db.session.commit()
+        db.session.commit() #commits
         return redirect(url_for('dashboard', current_date=date.today()))
 
 @app.route('/habit/<habit_id>')
@@ -182,7 +178,7 @@ def edit_habit(habit_id):
 
             return redirect(url_for('habit', habit_id=habit.id))
 
-        elif request.form.get('archive'):
+        elif request.form.get('archive'): #allows a user to set a habit to inactive, this will prevent habit logs from showing up on the dashboard
             habit.active = False
 
             db.session.add(habit)
@@ -190,7 +186,7 @@ def edit_habit(habit_id):
 
             return redirect(url_for('habit', habit_id=habit.id))
 
-        elif request.form.get('unarchive'):
+        elif request.form.get('unarchive'): #allows a user to set a habit to active, this will allow habit logs to show up on dashboard
             habit.active = True
 
             db.session.add(habit)
@@ -198,7 +194,8 @@ def edit_habit(habit_id):
 
             return redirect(url_for('habit', habit_id=habit.id))
 
-        elif request.form.get('delete'):
+        elif request.form.get('delete'): #hard delete the current habit
+            #TODO: it is probably a good idea to soft delete habits and not expose hard delete functionality to the user
             Log.query.filter_by(habit_id=habit.id).delete()
 
             db.session.delete(habit)
@@ -206,11 +203,10 @@ def edit_habit(habit_id):
 
             return redirect(url_for('dashboard', current_date=date.today()))
 
-@app.route('/archive')
+@app.route('/archive') #page for all the habits that are currently set to inactive
 @login_required
 def archive():
     habits = Habit.query.filter_by(user_id=current_user.id, active=False).all()
-    print(habits)
     return render_template("archive.html", habits=habits)
 
 @app.route('/logout')

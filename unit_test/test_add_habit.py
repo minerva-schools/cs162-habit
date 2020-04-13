@@ -16,12 +16,20 @@ def test_add_habit(client,reset_db):
 	assert len(list(User.query.filter_by(username='test_user'))) == 1 # ensure the user was added
 
 	# adding a habit should fail without login 
-	rv = client.post('/dashboard/add', data={'habit_name': 'test_habit', 'habit_description': 'test_desc'}, follow_redirects=True)
-	assert b'Please log in to access this page' in rv.data 
-	assert Habit.query.filter_by(id=1, title='test_habit').first() is None # habit should /not/ be added to db
+	rv = client.post('/add_habit', data={
+            'title' : 'title_test',
+            'description' : 'description_test',
+            'frequency' : 'daily'})
+	# assert b'Please log in to access this page' in rv.data 
+	assert Habit.query.filter_by(id=1, title='title_test').first() is None # habit should /not/ be added to db
 
 	# log in and try again - now it should work
 	client.post('/login', data={'username': 'test_user', 'password': 'test_password'}) # login with created user
-	rv = client.post('/dashboard/add', data={'habit_name': 'test_habit', 'habit_description': 'test_desc'}, follow_redirects=True)
-	assert Habit.query.filter_by(id=1, title='test_habit').first() is not None # habit should be added to db
-	assert Log.query.filter(Log.log.like('%created%'),Log.habit_id==1).first() is not None # creation log was added
+	# adding a habit should fail without login 
+	rv = client.post('/add_habit', data={
+            'title' : 'title_test',
+            'description' : 'description_test',
+            'frequency' : 'daily'})
+	# assert b'Please log in to access this page' in rv.data 
+	assert Habit.query.filter_by(id=1, title='title_test').first() is not None # habit should /not/ be added to db
+	assert Log.query.filter_by(id=1).first() is not None
