@@ -11,7 +11,10 @@ class User(UserMixin,db.Model):
     password = db.Column(db.String(200))
 
     def __repr__(self):
-        return "<User(id={}, username={}, password={})>".format(self.id, self.username, self.password)
+        return "<User(id={}, username={}, password={})>".format(
+            self.id, 
+            self.username, 
+            self.password)
 
 class Habit(db.Model):
 
@@ -51,7 +54,6 @@ class Log(db.Model):
             self.habit_id,
             self.user_id,
             self.date,
-            self.status
-        )
+            self.status)
 
 db.create_all()
