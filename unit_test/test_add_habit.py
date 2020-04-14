@@ -62,12 +62,12 @@ def test_edit_habit(client,reset_db):
 	}
 
 	client.post(('/habit/{}/edit'.format(habit.id)), data=data)
-	assert Habit.query.filter_by(title='test_title_edit').first() is None
+	assert Habit.query.filter_by(title='test_title_edit').first() is None #title should not have ben changed
 
 	login_user(client, 'test_user', 'test_password')
 
 	client.post(('/habit/{}/edit'.format(habit.id)), data=data)
-	assert Habit.query.filter_by(title='test_title_edit').first() is not None
+	assert Habit.query.filter_by(title='test_title_edit').first() is not None #title should have been changed
 
 def test_delete_habit(client,reset_db):
 	'''Delete a habit'''
@@ -83,7 +83,7 @@ def test_delete_habit(client,reset_db):
 	}
 
 	client.post('/habit/{}/edit'.format(habit.id), data=data)
-	assert Habit.query.first() is None and Log.query.first() is None
+	assert Habit.query.first() is None and Log.query.first() is None #delete should delete both habit and log entries
 
 def test_archive_habit(client,reset_db):
 	'''Archive / Unarchive a Habit'''
@@ -99,14 +99,14 @@ def test_archive_habit(client,reset_db):
 	}
 
 	client.post('/habit/{}/edit'.format(habit.id), data=data)
-	assert Habit.query.filter_by(active=False).first() is not None
+	assert Habit.query.filter_by(active=False).first() is not None #should archive habit
 
 	data = {
 		'unarchive' : 'unarchive'
 	}
 
 	client.post('/habit/{}/edit'.format(habit.id), data=data)
-	assert Habit.query.filter_by(active=True).first() is not None
+	assert Habit.query.filter_by(active=True).first() is not None #should unarchive habit
 
 def test_date_forward(client, reset_db):
 	'''When a user clicks the button to go into the future on their dashboard, they should add a log entry for all active habits'''
@@ -122,7 +122,7 @@ def test_date_forward(client, reset_db):
 
 	client.post('/dashboard/{}'.format(today), data=data, follow_redirects=True)
 
-	assert len(Log.query.all()) == 1
+	assert len(Log.query.all()) == 1 #log table should only have one entry (created when habit was created)
 
 	data = {
 		'increment' : 'tomorrow'
@@ -130,5 +130,5 @@ def test_date_forward(client, reset_db):
 
 	client.post('/dashboard/{}'.format(today), data=data, follow_redirects=True)
 
-	assert len(Log.query.all()) == 2
+	assert len(Log.query.all()) == 2 #log table should now have two, one for today and the next for tomorrow
 
