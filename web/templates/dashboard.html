@@ -9,6 +9,7 @@
     <p>
         Hello {{user.username}}!<br>
         <a href="{{ url_for('add_habit', user=user) }}'">Add Habit</a><br>
+        <a href="{{ url_for('active_habits') }}">All Active Habits</a><br>
         <a href="{{ url_for('logout') }}" class="navbar-item">Logout</a>
     </p>
 

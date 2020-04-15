@@ -201,6 +201,12 @@ def edit_habit(habit_id):
 def archive():
     habits = Habit.query.filter_by(user_id=current_user.id, active=False).all()
     return render_template("archive.html", habits=habits)
+    
+@app.route('/active_habits') #page for all current active habits 
+@login_required
+def active_habits():
+    habits = Habit.query.filter_by(user_id=current_user.id, active=True).all()
+    return render_template("active_habits.html", habits=habits)
 
 @app.route('/logout')
 @login_required
