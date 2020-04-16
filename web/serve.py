@@ -5,7 +5,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from web import app, db, login_manager
-from .models import User, Habit, Log
+from .models import User, Habit, Log, Milestone
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -145,14 +145,24 @@ def add_habit():
 
         db.session.add(log)
 
-        db.session.commit() #commits
+        
+        # Add a milestone if user inserted one:
+        if request.form.get('milestone'):
+            deadline=None
+            if request.form.get('deadline'):
+                deadline=datetime.strptime(request.form['deadline'], '%Y-%m-%d')
+            milestone = Milestone(user_id=current_user.id, habit_id=habit.id, text=request.form['milestone'],deadline=deadline)
+            db.session.add(milestone)
+            
+        db.session.commit() # end of the transaction
         return redirect(url_for('dashboard', current_date=date.today()))
 
 @app.route('/habit/<habit_id>')
 @login_required
 def habit(habit_id):
     habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
-    return render_template('habit.html', habit=habit)
+    milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
+    return render_template('habit.html', habit=habit, milestones=milestones)
 
 @app.route('/habit/<habit_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -171,6 +181,17 @@ def edit_habit(habit_id):
 
             return redirect(url_for('habit', habit_id=habit.id))
 
+        elif request.form.get('milestone'):
+            deadline=None
+            if request.form.get('deadline'):
+                deadline=datetime.strptime(request.form['deadline'], '%Y-%m-%d')
+            milestone = Milestone(user_id=current_user.id, habit_id=habit.id, text=request.form['milestone'],deadline=deadline)
+            
+            db.session.add(milestone)
+            db.session.commit()
+            
+            return redirect(url_for('habit', habit_id=habit.id))
+            
         elif request.form.get('archive'): #allows a user to set a habit to inactive, this will prevent habit logs from showing up on the dashboard
             habit.active = False
 
@@ -190,6 +211,7 @@ def edit_habit(habit_id):
         elif request.form.get('delete'): #hard delete the current habit
             #TODO: it is probably a good idea to soft delete habits and not expose hard delete functionality to the user
             Log.query.filter_by(habit_id=habit.id).delete()
+            Milestone.query.filter_by(habit_id=habit.id).delete()
 
             db.session.delete(habit)
             db.session.commit()
@@ -213,6 +235,11 @@ def active_habits():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+    
+@app.shell_context_processor # Makes all objects available on flask shell for easy testing
+def make_shell_context():
+    '''Allows to work with all objects directly in flask shell'''
+    return {'db': db, 'User': User, 'Habit': Habit, 'Milestone': Milestone, 'Log': Log}
 
 if __name__ == '__main__':
     app.run()
