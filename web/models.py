@@ -74,7 +74,7 @@ class Milestone(db.Model):
         deadline='No deadline'
         if self.deadline:
             deadline = self.deadline.strftime("%Y-%m-%d")
-        return "<Milestone={}, habit_id={}, user_id={}, title={}, deadline={}, user_succeeded={})>".format(
+        return "<Milestone={}, habit_id={}, user_id={}, text={}, deadline={}, user_succeeded={})>".format(
                 self.id,
                 self.habit_id,
                 self.user_id,
