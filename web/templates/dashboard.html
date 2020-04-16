@@ -15,6 +15,9 @@
 
     <p>
         <h2> {{ date }} </h2>
+        <h4> ToDo: {{ count['todo'] }} </h4>
+        <h4> Completed: {{ count['completed'] }} </h4>
+        <h4> Success: {{ count['completed'] }} / {{ count ['total'] }} </h4>
 
         <form action="{{ url_for('dashboard', current_date=date) }}" method='POST'>
             <input type="submit" name="increment" value="yesterday">
