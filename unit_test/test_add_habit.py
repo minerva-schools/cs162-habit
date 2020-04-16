@@ -2,7 +2,7 @@ import pytest
 from web import app, db, login_manager
 from web.models import User, Habit, Log
 from flask import session
-from datetime import date
+from datetime import date, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
 def create_db_user(username,password):
@@ -129,6 +129,12 @@ def test_date_forward(client, reset_db):
 	}
 
 	client.post('/dashboard/{}'.format(today), data=data, follow_redirects=True)
+
+	tmrw = date.today() + timedelta(days=1)
+	
+	log = Log.query.filter_by(id=2).first()
+
+	assert date.strftime(log.date, '%Y-%m-%d') == date.strftime(tmrw, '%Y-%m-%d') #date of log should be tmr's date
 
 	assert len(Log.query.all()) == 2 #log table should now have two, one for today and the next for tomorrow
 
