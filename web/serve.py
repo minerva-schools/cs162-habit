@@ -151,6 +151,9 @@ def add_habit():
             deadline=None
             if request.form.get('deadline'):
                 deadline=datetime.strptime(request.form['deadline'], '%Y-%m-%d')
+                if deadline.date() < datetime.now().date():  #check if the deadline is not in the past
+                    flash('The deadline cannot be in the past!')
+                    return redirect(url_for('add_habit'))
             milestone = Milestone(user_id=current_user.id, habit_id=habit.id, text=request.form['milestone'],deadline=deadline)
             db.session.add(milestone)
             

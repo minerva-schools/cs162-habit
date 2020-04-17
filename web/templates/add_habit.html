@@ -34,6 +34,13 @@
             <input type="date" name="deadline"><br>
             <input type="submit" value="Submit">
 
+            <p>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {{ messages[0] }}
+            {% endif %}
+            {% endwith %}
+            </p>
 
         </form>
     </p>
