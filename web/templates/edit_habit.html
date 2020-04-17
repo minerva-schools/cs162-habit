@@ -6,10 +6,9 @@
 </head>
 
 <body>
-    <p>
-        This is the habit edit page
-    </p>
+    <h2>Edit Habit</h2>
 
+    <h3>Edit Habit Details</h3>
     <form action="" method="POST">
         <label> Title </label><br>
         <input type="text" name="title" value="{{habit.title}}"><br>
@@ -18,16 +17,34 @@
         <label> Frequency </label><br>
         <input type="radio" id="daily" name="frequency" value="daily">
         <label for="daily">daily</label><br>
-        <input type="submit" value="edit">
+        <input type="submit" value="Edit">
+    </form>
+
+    <h3>Add a new milestone</h3>
+    <form action='' method='POST'>
+        <label> Milestone description </label><br>
+        <input type="text" name="milestone"><br>
+        <label> Deadline [Optional] </label><br>
+        <input type="date" name="deadline"><br>
+        <input type="submit" value="Add Milestone">
     </form>
 
     <p>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {{ messages[0] }}
+    {% endif %}
+    {% endwith %}
+    </p>
+
+    <h3>Change Habit Status</h3>
+    <p>
         <form action="" method="POST">
-            <input type="submit" name="delete" value="delete">
+            <input type="submit" name="delete" value="Delete">
             {% if habit.active %}
-                <input type="submit" name="archive" value="archive">
+                <input type="submit" name="archive" value="Archive">
             {% else %}
-                <input type="submit" name="unarchive" value="unarchive">
+                <input type="submit" name="unarchive" value="Unarchive">
             {% endif %}
         </form>
     </p>
