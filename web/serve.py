@@ -37,6 +37,8 @@ def signup():
             db.session.commit()
         except:
             db.session.rollback()
+            flash('Something happened and signup failed. Please try again.')
+            return redirect(url_for('signup'))
 
         return redirect(url_for('login'))
 
@@ -89,6 +91,8 @@ def dashboard(current_date):
                         db.session.commit()
                     except:
                         db.session.rollback()
+                        flash('Ahh, something happened while loading this page. The page was refreshed.')
+                        return redirect(url_for('dashboard', current_date=date.today()))
 
         #returns a habit, log iterable of all the logs for the current_date
         habit_log_iter = db.session.query(Habit, Log).filter(Habit.id == Log.habit_id, Log.date == datetime.strptime(current_date, '%Y-%m-%d'), Habit.active == True).all()
@@ -120,6 +124,8 @@ def dashboard(current_date):
                     db.session.commit()
                 except:
                     db.session.rollback()
+                    flash('Damn, something happened while marking this as done. Please try again.')
+                    return redirect(url_for('dashboard', current_date=date.today()))
 
         elif request.form.get('undo-done'): #uncheck habits for current_date
             for checked_off_id in request.form.getlist('undo-done'):
@@ -130,6 +136,8 @@ def dashboard(current_date):
                     db.session.commit()
                 except:
                     db.session.rollback()
+                    flash('Oy vey, something happened while unmarking this. Please try again.')
+                    return redirect(url_for('dashboard', current_date=date.today()))
 
         return redirect(url_for('dashboard', current_date=datetime.strftime(current_date, '%Y-%m-%d')))
 
@@ -178,6 +186,9 @@ def add_habit():
             db.session.commit() # end of the transaction
         except:
             db.session.rollback()
+            flash('Woops, there was an error adding your habit. Please try again.')
+            return redirect(url_for('add_habit'))
+            
         return redirect(url_for('dashboard', current_date=date.today()))
 
 @app.route('/habit/<habit_id>')
@@ -204,6 +215,8 @@ def edit_habit(habit_id):
                 db.session.commit()
             except:
                 db.session.rollback()
+                flash('Aww, there was an error editing your habit. Please try again.')
+                return redirect(url_for('habit', habit_id=habit.id))
 
             return redirect(url_for('habit', habit_id=habit.id))
 
@@ -218,7 +231,9 @@ def edit_habit(habit_id):
                 db.session.commit()
             except:
                 db.session.rollback()
-            
+                flash('Dammit! There was an error adding a milestone. Please try again.')
+                return redirect(url_for('habit', habit_id=habit.id))
+
             return redirect(url_for('habit', habit_id=habit.id))
             
         elif request.form.get('archive'): #allows a user to set a habit to inactive, this will prevent habit logs from showing up on the dashboard
@@ -228,6 +243,8 @@ def edit_habit(habit_id):
                 db.session.commit()
             except:
                 db.session.rollback()
+                flash('Oops, there was an error archiving your habit. Please try again.')
+                return redirect(url_for('habit', habit_id=habit.id))
 
             return redirect(url_for('habit', habit_id=habit.id))
 
@@ -238,6 +255,9 @@ def edit_habit(habit_id):
                 db.session.commit()
             except:
                 db.session.rollback()
+                flash('We are sorry, there was an error activating your habit. Please try again.')
+                return redirect(url_for('habit', habit_id=habit.id))
+
 
             return redirect(url_for('habit', habit_id=habit.id))
 
@@ -250,6 +270,9 @@ def edit_habit(habit_id):
                 db.session.commit()
             except:
                 db.session.rollback()
+                flash('There was an error deleting your habit. Please try again (or is it a sign?).')
+                return redirect(url_for('habit', habit_id=habit.id))
+
 
             return redirect(url_for('dashboard', current_date=date.today()))
 
