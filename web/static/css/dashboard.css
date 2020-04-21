@@ -1,0 +1,106 @@
+.container {
+    font-family: Raleway, Roboto, sans-serif;
+    background-color: #151A2C;
+    margin-right: auto;
+    padding: 30px;
+    color: #FFFFFF;
+}
+
+#header {
+    vertical-align: bottom;
+}
+
+#header #date {
+    float: left;
+    clear: left;
+    font-size: auto;
+}
+
+#header #info {
+    float: right;
+    display: block;
+    padding-top: 10px;
+    clear: right;
+}
+
+hr {
+    color: lightgray;
+    opacity: 0.2;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+a {
+    color: white;
+    text-align: center;
+    text-decoration: none;
+}
+
+a:hover, a:active {
+    background-color: red;
+}
+
+.logout {
+    padding: 6px 4px;
+    background-color: #000000;
+    border-radius: 4px;
+}
+
+.desc:hover {
+    background-color: aqua;
+}
+
+#NavBar {
+    float: none;
+    clear: left;
+    margin-top: 20px;
+}
+
+.button {
+    width: auto;
+    height: 36px;
+    vertical-align: middle;
+    border-width: medium;
+}
+
+
+.button:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(2px);
+}
+
+.button.yesterday, .button.tomorrow {
+    background: transparent;
+    color: white;
+}
+
+.button.today {
+    background: transparent;
+    color: #FFFFFF;
+    font-family: auto;
+    font-size: 24px;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: white;
+    color: black;
+}
+
+#content {
+    height: auto;
+    padding-top: 5px;
+}
+
+.habit p {
+    display: inline-block;
+}
+
+.addhabit {
+    background-color: blue;
+}
+
+@media screen{
+}
+
+

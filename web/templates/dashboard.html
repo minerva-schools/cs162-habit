@@ -1,62 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <title>dashboard</title>
+    <link href="../static/css/dashboard.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
-    <p>
-        Hello {{user.username}}!<br>
-        <a href="{{ url_for('add_habit', user=user) }}'">Add Habit</a><br>
-        <a href="{{ url_for('active_habits') }}">All Active Habits</a><br>
-        <a href="{{ url_for('logout') }}" class="navbar-item">Logout</a>
-    </p>
+    <div class="container">
+        <div id="header">
+            <div id="date">
+            <h1>{{ date }}</h1>
+            </div>
 
-    <p>
-        <h2> {{ date }} </h2>
-        <h4> ToDo: {{ count['todo'] }} </h4>
-        <h4> Completed: {{ count['completed'] }} </h4>
-        <h4> Success: {{ count['completed'] }} / {{ count ['total'] }} </h4>
+            <div id="info">
+            <p> Hello {{user.username}}!
+                <a class="logout" href="{{ url_for('logout') }}" >Logout</a> 
+            </p>
+            </div>
+        </div>
 
-        <form action="{{ url_for('dashboard', current_date=date) }}" method='POST'>
-            <input type="submit" name="increment" value="yesterday">
-            <input type="submit" name="increment" value="today">
-            <input type="submit" name="increment" value="tomorrow">
-        </form>
-    </p>
 
-    <p>
-        <h2> Active Habits </h2>
+        <div id="NavBar"> 
+            <hr>
+            <form action="{{ url_for("dashboard", current_date=date) }}" method="POST">
+                <!--back button-->
+                <button class="button yesterday" type="submit" alt="yesterday" name="increment" value="yesterday"> 
+                    &#8249;
+                </button>
+                
+                <!--today button-->
+                <button class="button today" name="increment" value="today" type="submit">TODAY</button>
 
-        <h3> To Do </h3>
-            <form method='POST'>
+                <!--tomorrow button-->
+                <button class="button tomorrow" type="submit" alt="tomorrow" name="increment" value="tomorrow"> 
+                    &#8250; 
+                </button>
+
+            </form>
+        </div>
+
+        <!--active habits-->
+        <div id="content">
+            <h3>
+                <strong> 
+                    Active Habits ({{ count['completed'] }} / {{ count ['total'] }}) 
+                </strong>
+            <br>
+            </h3>
+            <!--undone-->
+            <form method="POST">
+                
                 {% for habit, log in habits %}
                     {% if not log.status %}
+                
+                    <div class="habit">
+                        <!--undone checkbox-->
+                        <input type="checkbox" id="{{log.id}}" name="done" value="{{log.id}}">
 
-                    <input type="checkbox" id="{{log.id}}" name="done" value="{{log.id}}">
-                    <label for="{{log.id}}"><a href="{{ url_for('habit', habit_id=habit.id) }}"> {{habit.title}} </a><br></label>
+                        <!--undone description-->
+                        <p>
+                            <label for="{{log.id}}">
+                            <a href="{{ url_for('habit', habit_id=habit.id) }}" class="title"> 
+                                {{habit.title}}
+                            </a>
+                            </label>
+                        </p>
 
+                        <p>{{habit.description}}</p>
+                        
+                    </div>
                     {% endif %}
                 {% endfor %}
-                <input type="submit" name="Submit" value="Check off">
+                <input type="submit" name="Submit" value="Log habits">
             </form>
-
-        <h3> Done </h3>
-            <form method='POST'>
+            
+            <!--undone-->
+            <form method="POST">
+                
                 {% for habit, log in habits %}
                     {% if log.status %}
+                
+                    <div class="habit">
+                        <!--done checkbox-->
                         <input type="checkbox" id="{{log.id}}" name="undo-done" value="{{log.id}}">
-                            <s><label for="{{log.id}}"><a href="{{ url_for('habit', habit_id=habit.id) }}"> {{habit.title}} </a><br></label></s>
+
+                        <!--done description-->
+                        <p>
+                            <label for="{{log.id}}">
+                            <a href="{{ url_for('habit', habit_id=habit.id) }}" class="title"> 
+                                {{habit.title}}
+                            </a>
+                            </label>
+                        </p>
+
+                        <p>{{habit.description}}</p>
+                        
+                    </div>
                     {% endif %}
                 {% endfor %}
-                <input type="submit" name="Submit" value="Undo checkoff">
+                <input type="submit" name="Submit" value="Unlog habits">
             </form>
+            
+        </div>
 
-            <h2> Passive Habits </h2>
+        <!--horizontal line-->
+        <hr>
 
-            <a href="{{url_for('archive')}}"> ARCHIVE </a>
-    </p>
+        <!--your progress-->
+        <div id="content2">
+            <h3>Your progress</h3>
+        </div>
+        
 
+    </div>
 </body>
+        
 </html>
