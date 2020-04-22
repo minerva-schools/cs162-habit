@@ -104,3 +104,4 @@ Note: this is a seperate virutal environment!
 - Zineb Salimi: Backend
 - Nour Elkhalawy: Design / Backend
 - Nathan Torento: Frontend
+- Vu Luong: Frontend

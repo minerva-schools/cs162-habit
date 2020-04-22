@@ -1,0 +1,97 @@
+.main-content {
+    margin-right: auto;
+    padding: 3.2em;
+}
+
+#header #date {
+    float: left;
+    clear: left;
+}
+
+#header #info {
+    float: right;
+    display: flex;
+    align-items: center;
+    clear: right;
+    padding-bottom: 0.1em;
+}
+
+hr {
+    border: 1px solid #303750;
+    border-top: 0;
+}
+
+#info>p {
+  margin-right: 0.8em;
+}
+
+a:hover, a:active {
+    background-color: red;
+}
+
+.logout {
+    background-color: #262c40;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 0.4em 0.8em;
+}
+
+.desc:hover {
+    background-color: aqua;
+}
+
+#NavBar {
+    float: none;
+    clear: left;
+    margin-top: 20px;
+}
+
+.button {
+    -webkit-appearance: none;
+    border: none;
+    width: auto;
+    height: 36px;
+    vertical-align: middle;
+}
+
+
+.button:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(2px);
+}
+
+.button.yesterday, .button.tomorrow {
+    background: transparent;
+    color: white;
+}
+
+.button.today {
+    background: transparent;
+    color: #FFFFFF;
+    font-family: auto;
+    font-size: 24px;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: white;
+    color: black;
+}
+
+#content {
+    height: auto;
+    padding-top: 5px;
+}
+
+.habit p {
+    display: inline-block;
+}
+
+.addhabit {
+    background-color: blue;
+}
+
+@media screen{
+}
