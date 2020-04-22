@@ -1,39 +1,28 @@
-.container {
-    font-family: Raleway, Roboto, sans-serif;
-    background-color: #151A2C;
+.main-content {
     margin-right: auto;
-    padding: 30px;
-    color: #FFFFFF;
-}
-
-#header {
-    vertical-align: bottom;
+    padding: 3.2em;
 }
 
 #header #date {
     float: left;
     clear: left;
-    font-size: auto;
 }
 
 #header #info {
     float: right;
-    display: block;
-    padding-top: 10px;
+    display: flex;
+    align-items: center;
     clear: right;
+    padding-bottom: 0.1em;
 }
 
 hr {
-    color: lightgray;
-    opacity: 0.2;
-    margin-left: 5px;
-    margin-right: 5px;
+    border: 1px solid #303750;
+    border-top: 0;
 }
 
-a {
-    color: white;
-    text-align: center;
-    text-decoration: none;
+#info>p {
+  margin-right: 0.8em;
 }
 
 a:hover, a:active {
@@ -41,9 +30,12 @@ a:hover, a:active {
 }
 
 .logout {
-    padding: 6px 4px;
-    background-color: #000000;
+    background-color: #262c40;
     border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 0.4em 0.8em;
 }
 
 .desc:hover {
@@ -57,10 +49,11 @@ a:hover, a:active {
 }
 
 .button {
+    -webkit-appearance: none;
+    border: none;
     width: auto;
     height: 36px;
     vertical-align: middle;
-    border-width: medium;
 }
 
 
@@ -102,5 +95,3 @@ a:hover, a:active {
 
 @media screen{
 }
-
-

@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+body {
+  display: flex;
+  background-color: #151A2C;
+  color: #FFFFFF;
+  min-height: 100vh;
+}
+h1, h2, h3 {
+  font-family: Raleway, sans-serif;
+  font-weight: 700;
+}
+h1 {
+  margin-bottom: 0.2em;
+}
+p, a, button {
+  font-family: Roboto, sans-serif;
+  font-weight: 400;
+}
+
+.main-content {
+  width: 100%;
+}
+.sidebar {
+  width: 14em;
+  flex-shrink: 0;
+  background-color: #1f2333;
+}
