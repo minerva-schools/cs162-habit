@@ -120,12 +120,62 @@ def dashboard(current_date):
                 try:
                     log = Log.query.filter_by(user_id=current_user.id, id=checked_off_id, date=current_date).first()
                     log.status = True
+
                     db.session.add(log)
                     db.session.commit()
+
+                    try:
+                        cur_habit_id = Log.query.filter_by(id=checked_off_id).first().habit_id
+                        count_log = len(Log.query.filter_by(user_id=current_user.id, habit_id=cur_habit_id, status=True).all())
+
+                        # check the total number of times the habit was logged ("count" milestones)
+                        if count_log in [3,7,14,30,60]:
+                            cur_habit_title = Habit.query.filter_by(id = cur_habit_id).first().title
+                            flash(f'YAY! You checked off the habit "{cur_habit_title}" {count_log} days in total!')
+                            get_milestone = Milestone.query.filter_by(user_id=current_user.id, habit_id=cur_habit_id, type='count', text=f'Complete the habit {count_log} times!').first()
+                            get_milestone.status=True #check off milestone
+                            db.session.commit()
+
+                    except:
+                        db.session.rollback()
+                        flash("Oh no! We couldn't check your progress after your checked off this habit. Uncheck and recheck off?")
+                        return redirect(url_for('dashboard', current_date=datetime.strptime(current_date, '%Y-%m-%d'))) #if fail, stay on the day where the user wanted to check off a habit
+
+                    try:
+                        # check the number of consecutive check-offs for the habit ("streak" milestones)
+                        last_logs = Log.query.filter_by(user_id=current_user.id, habit_id = cur_habit_id, status=True).order_by(Log.date.desc())
+
+                        # get the habit frequency ('daily', 'weekly', or 'monthly')
+                        habit_freq = Habit.query.filter_by(user_id=current_user.id, id=cur_habit_id).first().frequency
+
+                        # dictionary - will serve to convert habit "string" to a number of days
+                        freq_to_days = {'daily': 1, 'weekly':7, 'monthly': 30}
+
+                        # check the last n times the habit should have been checked:
+                        for n in [3,7,14,30,60]:
+                            count_logs = 1 #initialize at 1 since this happens when user logs in the habit
+                            for i in range(1,n):  # starting from the current day
+                                date_to_check = current_date - timedelta(days= i*freq_to_days[habit_freq])  # check the previous logs (depending on frequency, could be previous logs every 1, 7 or 30 days)
+                                if date_to_check in [log.date for log in last_logs]: # if the habit was successfully checked i times ago
+                                    count_logs += 1 # increment the number of consecutive logs
+
+                            if count_logs == n: # if goal streak was achieved, celebrate and mark milestone as completed
+                                flash(f"YOU ROCK! You completed the habit '{cur_habit_title}' {n} times in a row!")
+                                get_streak_milestone = Milestone.query.filter_by(user_id=current_user.id, habit_id=cur_habit_id, type='streak', text=f'Complete the habit {n} consecutive times!').first()
+                                get_streak_milestone.status=True #check off milestone
+                                db.session.commit()
+
+                    except:
+                        flash("Oops! We couldn't keep track of your streak count for this habit. Try again?")
+                        return redirect(url_for('dashboard', current_date=datetime.strptime(current_date, '%Y-%m-%d'))) #if fail, stay on the day where the user wanted to check off a habit
+
+
                 except:
                     db.session.rollback()
                     flash('Damn, something happened while marking this as done. Please try again.')
                     return redirect(url_for('dashboard', current_date=date.today()))
+
+
 
         elif request.form.get('undo-done'): #uncheck habits for current_date
             for checked_off_id in request.form.getlist('undo-done'):
@@ -147,7 +197,6 @@ def add_habit():
     if request.method == 'GET':
         return render_template('add_habit.html', user=current_user)
     elif request.method == 'POST':
-        #TODO: this needs to be a transaction with a db.session.rollback given an exception.
         try:
             #adds a habit
             habit = Habit(
@@ -171,8 +220,20 @@ def add_habit():
 
             db.session.add(log)
 
-            
-            # Add a milestone if user inserted one:
+            # Automatically create a 'count' milestone when the habit is created
+            # E.g. A 'count' milestone is achieved when the user completed the habit a total number of 3 times
+            for n in [3,7,14,30,60]:  # milestone is achieved when habit is checked 3, 7, 14, 30 and 60 times total
+                iteration_milestone = Milestone(user_id=current_user.id, habit_id=habit.id, type='count', text=f'Complete the habit {n} times!')
+                db.session.add(iteration_milestone)
+
+            # Automatically create "streak" milestones when the habit is created
+            # E.g.streak milestone is achieved when the user completed the habit 3 consecutive days (or whatever frequency was specified)
+            for n in [3,7,14,30,60]:  # milestone is achieved when habit is checked 3, 7, 14, 30 and 60 consecutive times total
+                streak_milestone = Milestone(user_id=current_user.id, habit_id=habit.id, type='streak', text=f'Complete the habit {n} consecutive times!')
+                db.session.add(streak_milestone)
+
+
+            # Add a user-defined milestone if user inserted one:
             if request.form.get('milestone'):
                 deadline=None
                 if request.form.get('deadline'):
@@ -180,15 +241,15 @@ def add_habit():
                     if deadline.date() < datetime.now().date():  #check if the deadline is not in the past
                         flash('The deadline cannot be in the past!')
                         return redirect(url_for('add_habit'))
-                milestone = Milestone(user_id=current_user.id, habit_id=habit.id, text=request.form['milestone'],deadline=deadline)
+                milestone = Milestone(user_id=current_user.id, habit_id=habit.id, type='custom', text=request.form['milestone'],deadline=deadline)
                 db.session.add(milestone)
-                
+
             db.session.commit() # end of the transaction
         except:
             db.session.rollback()
             flash('Woops, there was an error adding your habit. Please try again.')
             return redirect(url_for('add_habit'))
-            
+
         return redirect(url_for('dashboard', current_date=date.today()))
 
 @app.route('/habit/<habit_id>')
@@ -226,7 +287,7 @@ def edit_habit(habit_id):
                 deadline=datetime.strptime(request.form['deadline'], '%Y-%m-%d')
             try:
                 milestone = Milestone(user_id=current_user.id, habit_id=habit.id, text=request.form['milestone'],deadline=deadline)
-            
+
                 db.session.add(milestone)
                 db.session.commit()
             except:
@@ -235,7 +296,7 @@ def edit_habit(habit_id):
                 return redirect(url_for('habit', habit_id=habit.id))
 
             return redirect(url_for('habit', habit_id=habit.id))
-            
+
         elif request.form.get('archive'): #allows a user to set a habit to inactive, this will prevent habit logs from showing up on the dashboard
             habit.active = False
             try:
@@ -281,8 +342,8 @@ def edit_habit(habit_id):
 def archive():
     habits = Habit.query.filter_by(user_id=current_user.id, active=False).all()
     return render_template("archive.html", habits=habits)
-    
-@app.route('/active_habits') #page for all current active habits 
+
+@app.route('/active_habits') #page for all current active habits
 @login_required
 def active_habits():
     habits = Habit.query.filter_by(user_id=current_user.id, active=True).all()
@@ -293,7 +354,7 @@ def active_habits():
 def logout():
     logout_user()
     return redirect(url_for('login'))
-    
+
 @app.shell_context_processor # Makes all objects available on flask shell for easy testing
 def make_shell_context():
     '''Allows to work with all objects directly in flask shell'''

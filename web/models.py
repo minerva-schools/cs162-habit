@@ -12,8 +12,8 @@ class User(UserMixin,db.Model):
 
     def __repr__(self):
         return "<User(id={}, username={}, password={})>".format(
-            self.id, 
-            self.username, 
+            self.id,
+            self.username,
             self.password)
 
 class Habit(db.Model):
@@ -61,14 +61,15 @@ class Milestone(db.Model):
     __tablename__ = 'milestone'
 
     id = db.Column(db.Integer, primary_key=True)
-    
+
     habit_id  = db.Column(db.Integer, db.ForeignKey('habit.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     text = db.Column(db.String(200), nullable=False)
+    type = db.Column(db.String(200), nullable=False, default='custom')
 
-    deadline = db.Column(db.Date) # deadline is optional 
-    complete = db.Column(db.Boolean, default=False) 
+    deadline = db.Column(db.Date) # deadline is optional
+    complete = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         deadline='No deadline'
