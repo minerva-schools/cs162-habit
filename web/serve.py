@@ -75,15 +75,22 @@ def dashboard(current_date):
         if habits: #if they are habits
             for habit in habits:
                 #check if no log exists for the current_date
-                if not Log.query.filter_by(habit_id=habit.id, date=datetime.strptime(current_date, '%Y-%m-%d')).first():
-                    #if no log exists, add a log
-                    log = Log(
-                        user_id=current_user.id,
-                        habit_id=habit.id,
-                        date=datetime.strptime(current_date, '%Y-%m-%d')
-                    )
-                    db.session.add(log)
-                    db.session.commit()
+                if not Log.query.filter_by(habit_id=habit.id, date=datetime.strptime(current_date, '%Y-%m-%d')).first(): #if no log exists for today for the habit
+                    
+                    gap = (datetime.strptime(current_date, '%Y-%m-%d').date() - habit.last_modified.date()).days #days since the habit was created/frequency changed
+                    weekly_test =  gap > 0 and gap % 7 == 0
+                    monthly_test =  gap > 0 and gap % 30 == 0 # assuming monthly habits occur every 30 days
+                    
+                    if ((habit.frequency == 'daily') 
+                        or (habit.frequency == 'weekly' and weekly_test) 
+                        or (habit.frequency == 'monthly' and monthly_test)):# check if a log is needed
+                        log = Log(
+                            user_id=current_user.id,
+                            habit_id=habit.id,
+                            date=datetime.strptime(current_date, '%Y-%m-%d')
+                        )
+                        db.session.add(log)
+                        db.session.commit()
 
         #returns a habit, log iterable of all the logs for the current_date
         habit_log_iter = db.session.query(Habit, Log).filter(Habit.id == Log.habit_id, Log.date == datetime.strptime(current_date, '%Y-%m-%d'), Habit.active == True).all()
@@ -136,7 +143,8 @@ def add_habit():
             title=request.form.get('title'),
             description=request.form.get('description'),
             frequency=request.form.get('frequency'),
-            date_created=datetime.today(),
+            date_created=datetime.today(), 
+            last_modified=datetime.today(),
             active=True
         )
 
@@ -181,16 +189,24 @@ def edit_habit(habit_id):
     if request.method == 'GET':
         return render_template('edit_habit.html', habit=habit)
     elif request.method == 'POST':
-        if request.form.get('title') or request.form.get('description') or request.form.get('frequency'):
+        if request.form.get('title') or request.form.get('description'):
             habit.title = request.form.get('title')
             habit.description = request.form.get('description')
-            habit.frequency = request.form.get('frequency')
 
             db.session.add(habit)
             db.session.commit()
 
             return redirect(url_for('habit', habit_id=habit.id))
 
+        elif request.form.get('frequency'):
+            habit.frequency = request.form.get('frequency')
+            habit.last_modified = datetime.today()
+
+            db.session.add(habit)
+            db.session.commit()
+
+            return redirect(url_for('habit', habit_id=habit.id))
+            
         elif request.form.get('milestone'):
             deadline=None
             if request.form.get('deadline'):
