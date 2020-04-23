@@ -2,36 +2,124 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Create Habit</title>
+    <title>{{habit.title}}</title>
+    <link href="/static/css/global.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/habit.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500&family=Material+Icons+Round&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <p>
-        <h3> Title </h3>
-            {{habit.title}}
-
-        <h3> Description </h3>
-            {{habit.description}}
-
-        <h3> Frequency </h3>
-            {{habit.frequency}}
-
-        <h3> Date Created </h3>
-            {{habit.date_created}}
-        
-        <h3> Active </h3>
-            {{habit.active}}
-
-        <h3>Milestones</h3>
-        {% for milestone in milestones %}
-            <li>{{ milestone.text }}, deadline: {{milestone.deadline}}, complete: {{milestone.complete}}<br></li>
+  <div id="sidebar-wrap">
+    <div class="sidebar-mobile-background" onClick="toggleNav()"></div>
+    <div class="sidebar-mobile">
+      <div class="sidebar-ham" onClick="toggleNav()">
+        <div class="ham-1"></div>
+        <div class="ham-2"></div>
+      </div>
+      <p class="mobile-app-name">Habits</p>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-inner-wrap">
+        <a class="sidebar-item" href="/">
+          <i class="material-icons-round">dashboard</i>
+          <p>Dashboard</p>
+        </a>
+        {% for habitItem in habits %}
+          <a class="{{'sidebar-item ' ~ ('active' if habit.id == habitItem.id else '')}}" href="{{'/habit/' ~ habit.id}}">
+            <i class="material-icons-round">short_text</i>
+            <p>{{habitItem.title}}</p>
+          </a>
         {% endfor %}
-
-    </p>
-
+        <a class="sidebar-item add-habit" href="/add_habit">
+          <i class="material-icons-round">add</i>
+          <p>Add habit</p>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="main-content">
     <p>
-        <a href="{{ url_for('edit_habit', habit_id=habit.id) }}"> Edit Habit and Milestones </a>
+      <div class="header-wrap">
+        <h1>{{habit.title}}</h1>
+        <a class="button" href="{{ url_for('edit_habit', habit_id=habit.id) }}">Edit</a>
+      </div>
+      <hr class="more-margin"/>
+
+        <div class="content">
+          <h3>Details</h3>
+          <hr />
+          <div class="habit-row">
+            <i class="material-icons-round">notes</i>
+            <p>{{habit.description}}</p>
+          </div>
+
+          <div class="habit-row">
+            <i class="material-icons-round">update</i>
+            <p>{{habit.frequency.capitalize()}}</p>
+          </div>
+
+          <div class="habit-row">
+            <i class="material-icons-round">event_note</i>
+            <p>{{'Created ' ~ habit.date_created.strftime('%B %d, %Y')}}</p>
+          </div>
+
+          <div class="habit-row">
+            {% if habit.active %}
+              <i class="material-icons-round">done</i>
+              <p>Active</p>
+            {% else %}
+              <i class="material-icons-round">clear</i>
+              <p>Inactive</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="content">
+          <h3>Milestones</h3>
+          <hr />
+          {% if milestones|length == 0 %}
+            <p class="inactive">Oops, you haven't set any milestone yet.</p>
+          {% endif %}
+          {% for milestone in milestones %}
+            <div class="milestone-wrap">
+              <div class="milestone-name habit-row">
+                <p>{{milestone.text}}</p>
+              </div>
+              <div class="milestone-inner-wrap">
+                {% if milestone.deadline %}
+                <div class="habit-row">
+                  <i class="material-icons-round">event_note</i>
+                  <p>{{'Deadline: ' ~ milestone.deadline.strftime('%B %d, %Y')}}</p>
+                </div>
+                {% endif %}
+                <div class="habit-row">
+                  {% if milestone.complete %}
+                    <i class="material-icons-round">done</i>
+                    <p>Completed</p>
+                  {% else %}
+                    <i class="material-icons-round">clear</i>
+                    <p>Not yet completed</p>
+                  {% endif %}
+                </div>
+              </div>
+              {% if loop.index0 != milestones|length - 1 %}
+                <hr />
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
     </p>
-    
+  </div>
 </body>
+<script>
+  let navOn = false;
+  toggleNav = function() {
+    navOn = !navOn;
+    if (navOn) {
+      document.getElementById('sidebar-wrap').classList.add('on');
+    } else {
+      document.getElementById('sidebar-wrap').classList.remove('on');
+    }
+  }
+</script>
 </html>
