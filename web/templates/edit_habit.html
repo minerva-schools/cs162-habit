@@ -14,10 +14,18 @@
         <input type="text" name="title" value="{{habit.title}}"><br>
         <label> Description </label><br>
         <input type="text" name="description" value="{{habit.description}}"><br>
+		<input type="submit" value="Edit">
+    
+	<h3>Edit Habit Frequency</h3>
+	<form action="" method="POST">
         <label> Frequency </label><br>
         <input type="radio" id="daily" name="frequency" value="daily">
         <label for="daily">daily</label><br>
-        <input type="submit" value="Edit">
+        <input type="radio" id="weekly" name="frequency" value="weekly">
+        <label for="weekly">weekly</label><br>
+        <input type="radio" id="monthly" name="frequency" value="monthly">
+        <label for="monthly">monthly</label><br>
+        <input type="submit" value="Change Frequency">
     </form>
 
     <h3>Add a new milestone</h3>
