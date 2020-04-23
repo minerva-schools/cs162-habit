@@ -95,7 +95,7 @@ def dashboard(current_date):
             'total' : len(db.session.query(Log).filter(Log.date == datetime.strptime(current_date, '%Y-%m-%d')).all())
         }
 
-        return render_template('dashboard.html', user=current_user, date=datetime.strptime(current_date, '%Y-%m-%d'), habits=habit_log_iter, count=count)
+        return render_template('dashboard.html', user=current_user, date=current_date, habits=habit_log_iter, count=count)
 
     if request.method == 'POST':
         current_date = datetime.strptime(current_date, '%Y-%m-%d')
@@ -126,18 +126,16 @@ def dashboard(current_date):
 @login_required
 def add_habit():
     if request.method == 'GET':
-        habits = Habit.query.filter_by(user_id=current_user.id, active=True)
-        return render_template('add_habit.html', user=current_user, habits=habits)
+        return render_template('add_habit.html', user=current_user)
     elif request.method == 'POST':
-        form = request.form
         #TODO: this needs to be a transaction with a db.session.rollback given an exception.
 
         #adds a habit
         habit = Habit(
             user_id=current_user.id,
-            title=form.get('title'),
-            description=form.get('description'),
-            frequency=form.get('frequency'),
+            title=request.form.get('title'),
+            description=request.form.get('description'),
+            frequency=request.form.get('frequency'),
             date_created=datetime.today(),
             active=True
         )
@@ -154,45 +152,57 @@ def add_habit():
 
         db.session.add(log)
 
-
-        #loop through all new milestones and add each one to the database
-        new_milestone_counter = 0
-        while ('new_milestone_text_' + str(new_milestone_counter)) in form.keys():
-            if form['new_milestone_text_' + str(new_milestone_counter)] and form['new_milestone_deadline_' + str(new_milestone_counter)]:
+        
+        # Add a milestone if user inserted one:
+        if request.form.get('milestone'):
+            deadline=None
+            if request.form.get('deadline'):
+                deadline=datetime.strptime(request.form['deadline'], '%Y-%m-%d')
                 if deadline.date() < datetime.now().date():  #check if the deadline is not in the past
                     flash('The deadline cannot be in the past!')
                     return redirect(url_for('add_habit'))
-                else:
-                    milestone = Milestone(
-                        user_id = current_user.id,
-                        habit_id = habit.id,
-                        text = form['new_milestone_text_' + str(new_milestone_counter)],
-                        deadline = datetime.strptime(form['new_milestone_deadline_' + str(new_milestone_counter)], '%Y-%m-%d'))
-                    db.session.add(milestone)
-            new_milestone_counter += 1
-
+            milestone = Milestone(user_id=current_user.id, habit_id=habit.id, text=request.form['milestone'],deadline=deadline)
+            db.session.add(milestone)
+            
         db.session.commit() # end of the transaction
         return redirect(url_for('dashboard', current_date=date.today()))
 
 @app.route('/habit/<habit_id>')
 @login_required
 def habit(habit_id):
-    habits = Habit.query.filter_by(user_id=current_user.id, active=True)
     habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
     milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
-    return render_template('habit.html', habits = habits, habit=habit, milestones=milestones)
+    return render_template('habit.html', habit=habit, milestones=milestones)
 
 @app.route('/habit/<habit_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_habit(habit_id):
-    habits = Habit.query.filter_by(user_id=current_user.id, active=True)
     habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
-    milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
     if request.method == 'GET':
-        return render_template('edit_habit.html', habits=habits, habit=habit, milestones=milestones)
+        return render_template('edit_habit.html', habit=habit)
     elif request.method == 'POST':
-        form = request.form.to_dict()
-        if 'archive' in form.keys(): #allows a user to set a habit to inactive, this will prevent habit logs from showing up on the dashboard
+        if request.form.get('title') or request.form.get('description') or request.form.get('frequency'):
+            habit.title = request.form.get('title')
+            habit.description = request.form.get('description')
+            habit.frequency = request.form.get('frequency')
+
+            db.session.add(habit)
+            db.session.commit()
+
+            return redirect(url_for('habit', habit_id=habit.id))
+
+        elif request.form.get('milestone'):
+            deadline=None
+            if request.form.get('deadline'):
+                deadline=datetime.strptime(request.form['deadline'], '%Y-%m-%d')
+            milestone = Milestone(user_id=current_user.id, habit_id=habit.id, text=request.form['milestone'],deadline=deadline)
+            
+            db.session.add(milestone)
+            db.session.commit()
+            
+            return redirect(url_for('habit', habit_id=habit.id))
+            
+        elif request.form.get('archive'): #allows a user to set a habit to inactive, this will prevent habit logs from showing up on the dashboard
             habit.active = False
 
             db.session.add(habit)
@@ -200,7 +210,7 @@ def edit_habit(habit_id):
 
             return redirect(url_for('habit', habit_id=habit.id))
 
-        elif 'unarchive' in form.keys(): #allows a user to set a habit to active, this will allow habit logs to show up on dashboard
+        elif request.form.get('unarchive'): #allows a user to set a habit to active, this will allow habit logs to show up on dashboard
             habit.active = True
 
             db.session.add(habit)
@@ -208,7 +218,7 @@ def edit_habit(habit_id):
 
             return redirect(url_for('habit', habit_id=habit.id))
 
-        elif 'delete' in form.keys(): #hard delete the current habit
+        elif request.form.get('delete'): #hard delete the current habit
             #TODO: it is probably a good idea to soft delete habits and not expose hard delete functionality to the user
             Log.query.filter_by(habit_id=habit.id).delete()
             Milestone.query.filter_by(habit_id=habit.id).delete()
@@ -217,38 +227,14 @@ def edit_habit(habit_id):
             db.session.commit()
 
             return redirect(url_for('dashboard', current_date=date.today()))
-        elif form['title'] or form['description'] or form['frequency']:
-            habit.title = request.form.get('title')
-            habit.description = request.form.get('description')
-            habit.frequency = request.form.get('frequency')
-            db.session.commit()
-
-        for milestone in milestones:
-            milestone.text = form['milestone_text_' + str(milestone.id)]
-            milestone.deadline = datetime.strptime(form['milestone_deadline_' + str(milestone.id)], '%Y-%m-%d')
-
-        #loop through all new milestones and add each one to the database
-        new_milestone_counter = 0
-        while ('new_milestone_text_' + str(new_milestone_counter)) in form.keys():
-            if form['new_milestone_text_' + str(new_milestone_counter)] and form['new_milestone_deadline_' + str(new_milestone_counter)]:
-                milestone = Milestone(
-                    user_id = current_user.id,
-                    habit_id = habit.id,
-                    text = form['new_milestone_text_' + str(new_milestone_counter)],
-                    deadline = datetime.strptime(form['new_milestone_deadline_' + str(new_milestone_counter)], '%Y-%m-%d'))
-                db.session.add(milestone)
-            new_milestone_counter += 1
-        db.session.commit()
-
-        return redirect(url_for('habit', habit_id=habit.id))
 
 @app.route('/archive') #page for all the habits that are currently set to inactive
 @login_required
 def archive():
     habits = Habit.query.filter_by(user_id=current_user.id, active=False).all()
     return render_template("archive.html", habits=habits)
-
-@app.route('/active_habits') #page for all current active habits
+    
+@app.route('/active_habits') #page for all current active habits 
 @login_required
 def active_habits():
     habits = Habit.query.filter_by(user_id=current_user.id, active=True).all()
@@ -259,7 +245,7 @@ def active_habits():
 def logout():
     logout_user()
     return redirect(url_for('login'))
-
+    
 @app.shell_context_processor # Makes all objects available on flask shell for easy testing
 def make_shell_context():
     '''Allows to work with all objects directly in flask shell'''
