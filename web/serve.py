@@ -275,29 +275,23 @@ def edit_habit(habit_id):
     if request.method == 'GET':
         return render_template('edit_habit.html', habit=habit)
     elif request.method == 'POST':
-        if request.form.get('title') or request.form.get('description') or request.form.get('frequency'):
+        if request.form.get('title') or request.form.get('frequency') or request.form.get('description'):
             try:
-                habit.title = request.form.get('title')
-                habit.description = request.form.get('description')
-                habit.frequency = request.form.get('frequency')
+                if request.form.get('title'): 
+                    habit.title = request.form.get('title')
+                if request.form.get('description'):
+                    habit.description = request.form.get('description')
 
+                if request.form.get('frequency'):
+                    habit.frequency = request.form.get('frequency')
+                    habit.last_modified = datetime.today()
 
                 db.session.add(habit)
                 db.session.commit()
             except:
                 db.session.rollback()
-                flash('Aww, there was an error editing your habit. Please try again.')
-                return redirect(url_for('habit', habit_id=habit.id))
-
-            return redirect(url_for('habit', habit_id=habit.id))
-
-        elif request.form.get('frequency'):
-            habit.frequency = request.form.get('frequency')
-            habit.last_modified = datetime.today()
-
-            db.session.add(habit)
-            db.session.commit()
-
+                flash('Nope, didn''t work. Redirecting ya')
+            
             return redirect(url_for('habit', habit_id=habit.id))
 
         elif request.form.get('milestone'):
