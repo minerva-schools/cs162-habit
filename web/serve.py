@@ -276,7 +276,7 @@ def add_habit():
 def habit(habit_id):
     habits = Habit.query.filter_by(user_id=current_user.id, active=True)
     habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
-    milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
+    milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id, type='custom').all()
     return render_template('habit.html', habits=habits, habit=habit, milestones=milestones)
 
 @app.route('/habit/<habit_id>/edit', methods=['GET', 'POST'])
@@ -285,7 +285,7 @@ def edit_habit(habit_id):
     habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
     if request.method == 'GET':
         habits = Habit.query.filter_by(user_id=current_user.id, active=True)
-        milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
+        milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id, type='custom').all()
         return render_template('edit_habit.html', habits=habits, milestones = milestones, habit=habit)
     elif request.method == 'POST':
         form = request.form.to_dict()
