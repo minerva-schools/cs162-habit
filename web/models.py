@@ -1,5 +1,6 @@
 from web import db
 from flask_login import UserMixin
+from datetime import datetime
 
 
 class User(UserMixin,db.Model):
@@ -25,7 +26,7 @@ class Habit(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(500))
     date_created = db.Column(db.DateTime)
-    last_modified = db.Column(db.DateTime)
+    last_modified = db.Column(db.DateTime, default=datetime.today)
     frequency = db.Column(db.String(100), default='Daily')
     active = db.Column(db.Boolean)
 
