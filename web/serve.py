@@ -329,7 +329,7 @@ def edit_habit(habit_id):
 
             return redirect(url_for('dashboard', current_date=date.today()))
 
-        elif 'title' in form.keys() or 'description' in form.keys() or 'frequency' in form.keys() or 'milestone_deadline_0' in form.keys():
+        elif 'title' in form.keys() or 'description' in form.keys() or 'frequency' in form.keys() or 'new_milestone_text_0' in form.keys():
             try:
                 if 'title' in form.keys():
                     habit.title = form['title']
