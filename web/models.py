@@ -66,7 +66,7 @@ class Milestone(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     text = db.Column(db.String(200), nullable=False)
-    type = db.Column(db.String(200), nullable=False, default='custom')
+    type = db.Column(db.String(200), default='custom')
 
     deadline = db.Column(db.Date) # deadline is optional
     complete = db.Column(db.Boolean, default=False)
