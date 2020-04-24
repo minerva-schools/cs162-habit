@@ -82,13 +82,21 @@ def dashboard(current_date):
                 if not Log.query.filter_by(habit_id=habit.id, date=datetime.strptime(current_date, '%Y-%m-%d')).first():
                     #if no log exists, add a log
                     try:
-                        log = Log(
-                            user_id=current_user.id,
-                            habit_id=habit.id,
-                            date=datetime.strptime(current_date, '%Y-%m-%d')
-                        )
+                        gap = (datetime.strptime(current_date, '%Y-%m-%d').date() - habit.last_modified.date()).days #days since the habit was created/frequency changed
+                        weekly_test =  gap > 0 and gap % 7 == 0
+                        monthly_test =  gap > 0 and gap % 30 == 0 # assuming monthly habits occur every 30 days
+
+                        if ((habit.frequency == 'daily')
+                            or (habit.frequency == 'weekly' and weekly_test)
+                            or (habit.frequency == 'monthly' and monthly_test)):# check if a log is needed
+                            log = Log(
+                                user_id=current_user.id,
+                                habit_id=habit.id,
+                                date=datetime.strptime(current_date, '%Y-%m-%d')
+                                )
                         db.session.add(log)
                         db.session.commit()
+
                     except:
                         db.session.rollback()
                         flash('Ahh, something happened while loading this page. The page was refreshed.')
@@ -197,6 +205,7 @@ def add_habit():
     if request.method == 'GET':
         return render_template('add_habit.html', user=current_user)
     elif request.method == 'POST':
+
         try:
             #adds a habit
             habit = Habit(
@@ -272,6 +281,7 @@ def edit_habit(habit_id):
                 habit.description = request.form.get('description')
                 habit.frequency = request.form.get('frequency')
 
+
                 db.session.add(habit)
                 db.session.commit()
             except:
@@ -281,6 +291,15 @@ def edit_habit(habit_id):
 
             return redirect(url_for('habit', habit_id=habit.id))
 
+        elif request.form.get('frequency'):
+            habit.frequency = request.form.get('frequency')
+            habit.last_modified = datetime.today()
+
+            db.session.add(habit)
+            db.session.commit()
+
+            return redirect(url_for('habit', habit_id=habit.id))
+            
         elif request.form.get('milestone'):
             deadline=None
             if request.form.get('deadline'):

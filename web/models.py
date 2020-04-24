@@ -25,6 +25,7 @@ class Habit(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(500))
     date_created = db.Column(db.DateTime)
+    last_modified = db.Column(db.DateTime)
     frequency = db.Column(db.String(100), default='Daily')
     active = db.Column(db.Boolean)
 
@@ -35,6 +36,7 @@ class Habit(db.Model):
                 self.title,
                 self.description,
                 self.date_created.strftime("%Y-%m-%d %H:%M"),
+                self.last_modified.strftime("%Y-%m-%d %H:%M"), # changes if user changes the frequency
                 self.frequency,
                 self.active)
 
