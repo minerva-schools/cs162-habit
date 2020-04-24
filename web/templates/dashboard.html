@@ -44,7 +44,7 @@
         <div class="content">
           <div class="header-wrap">
               <div id="date">
-              <h1>{{ date.strftime('%B %d, %Y') }}</h1>
+              <h1>{{ date }}</h1>
               </div>
 
               <div id="info">
@@ -56,7 +56,7 @@
 
           <div id="NavBar">
               <hr>
-              <form action="{{ url_for("dashboard", current_date=date.strftime('%Y-%m-%d')) }}" method="POST">
+              <form action="{ url_for('dashboard', current_date=date }" method="POST">
                   <!--back button-->
                   <button class="button yesterday" type="submit" alt="yesterday" name="increment" value="yesterday">
                       &#8249;
