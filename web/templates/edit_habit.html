@@ -2,59 +2,169 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Edit Habit</title>
+    <title>{{habit.title}}</title>
+    <link href="/static/css/global.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/edit_habit.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500&family=Material+Icons+Round&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <h2>Edit Habit</h2>
-
-    <h3>Edit Habit Details</h3>
+  <div id="sidebar-wrap">
+    <div class="sidebar-mobile-background" onClick="toggleNav()"></div>
+    <div class="sidebar-mobile">
+      <div class="sidebar-ham" onClick="toggleNav()">
+        <div class="ham-1"></div>
+        <div class="ham-2"></div>
+      </div>
+      <p class="mobile-app-name">Habits</p>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-inner-wrap">
+        <a class="sidebar-item" href="/">
+          <i class="material-icons-round">dashboard</i>
+          <p>Dashboard</p>
+        </a>
+        {% for habitItem in habits %}
+          <a class="{{'sidebar-item ' ~ ('active' if habit.id == habitItem.id else '')}}" href="{{'/habit/' ~ habit.id}}">
+            <i class="material-icons-round">short_text</i>
+            <p>{{habitItem.title}}</p>
+          </a>
+        {% endfor %}
+        <a class="sidebar-item add-habit" href="/add_habit">
+          <i class="material-icons-round">add</i>
+          <p>Add habit</p>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="main-content">
     <form action="" method="POST">
-        <label> Title </label><br>
-        <input type="text" name="title" value="{{habit.title}}"><br>
-        <label> Description </label><br>
-        <input type="text" name="description" value="{{habit.description}}"><br>
-		<input type="submit" value="Edit">
-    
-	<h3>Edit Habit Frequency</h3>
-	<form action="" method="POST">
-        <label> Frequency </label><br>
-        <input type="radio" id="daily" name="frequency" value="daily">
-        <label for="daily">daily</label><br>
-        <input type="radio" id="weekly" name="frequency" value="weekly">
-        <label for="weekly">weekly</label><br>
-        <input type="radio" id="monthly" name="frequency" value="monthly">
-        <label for="monthly">monthly</label><br>
-        <input type="submit" value="Change Frequency">
-    </form>
+      <div class="header-wrap">
+        <h1>
+          <input type="text" value="{{habit.title}}" autocomplete="off" name="title" placeholder="Title"/>
+        </h1>
+        <div class="header-buttons-wrap">
+          <input class="button" type="submit" name="delete" value="Delete">
+          {% if habit.active %}
+          <input class="button"type="submit" name="archive" value="Archive">
+          {% else %}
+          <input class="button"type="submit" name="unarchive" value="Unarchive">
+          {% endif %}
+          <input type="submit" class="button em" value="Done"/>
+        </div>
+      </div>
+      <hr class="more-margin"/>
 
-    <h3>Add a new milestone</h3>
-    <form action='' method='POST'>
-        <label> Milestone description </label><br>
-        <input type="text" name="milestone"><br>
-        <label> Deadline [Optional] </label><br>
-        <input type="date" name="deadline"><br>
-        <input type="submit" value="Add Milestone">
-    </form>
+      <div class="content">
+        <h3>Details</h3>
+        <hr />
+        <div class="habit-row">
+          <i class="material-icons-round">notes</i>
+          <input type="text" name="description" value="{{habit.description}}" autocomplete="off" placeholder="Description">
+        </div>
 
+        <div class="habit-row">
+          <i class="material-icons-round">update</i>
+          <input type="radio" name="frequency" value="daily" {{'checked' if habit.frequency == 'daily'}} />
+          <label>Daily</label>
+          <input type="radio" name="frequency" value="weekly" {{'checked' if habit.frequency == 'weekly'}}/>
+          <label>Weekly</label>
+          </select>
+        </div>
+
+        <div class="habit-row inactive">
+          <i class="material-icons-round">event_note</i>
+          <p>{{'Created ' ~ habit.date_created.strftime('%B %d, %Y')}}</p>
+        </div>
+
+        <div class="habit-row inactive">
+          {% if habit.active %}
+            <i class="material-icons-round">done</i>
+            <p>Active</p>
+          {% else %}
+            <i class="material-icons-round">clear</i>
+            <p>Inactive</p>
+          {% endif %}
+        </div>
+      </div>
+
+    <div class="content" id="milestone-wrap">
+      <h3>Milestones</h3>
+      <hr />
+      {% for milestone in milestones %}
+        <div class="milestone-wrap">
+          <div class="milestone-name habit-row">
+            <input type="text" autocomplete="off" name="{{'milestone_text_' ~ milestone.id}}" value="{{milestone.text}}" placeholder="Milestone"/>
+          </div>
+          <div class="milestone-inner-wrap">
+            <div class="habit-row">
+              <i class="material-icons-round">event_note</i>
+              <input type="date" autocomplete="off" name="{{'milestone_deadline_' ~ milestone.id}}" value="{{milestone.deadline}}"/>
+            </div>
+            <div class="habit-row inactive">
+              {% if milestone.complete %}
+                <i class="material-icons-round">done</i>
+                <p>Completed</p>
+              {% else %}
+                <i class="material-icons-round">clear</i>
+                <p>Not yet completed</p>
+              {% endif %}
+            </div>
+          </div>
+          <hr />
+        </div>
+      {% endfor %}
+      <div class="milestone-wrap new hidden">
+        <div class="milestone-name habit-row">
+          <i class="material-icons-round">flag</i>
+          <input class="new-milestone-text" type="text" autocomplete="off" placeholder="New milestone"/>
+        </div>
+        <div class="milestone-inner-wrap">
+          <div class="habit-row">
+            <i class="material-icons-round">event_note</i>
+            <label>Deadline:</label>
+            <input class="new-milestone-deadline" type="date"/>
+          </div>
+          <div class="habit-row">
+          </div>
+        </div>
+      </div>
+      <div class="add-milestone">
+        <p class="button" onClick="addMilestone()">New milestone</p>
+      </div>
+    </div>
+    </form>
     <p>
     {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {{ messages[0] }}
-    {% endif %}
+      {% if messages %}
+        {{ messages[0] }}
+      {% endif %}
     {% endwith %}
     </p>
-
-    <h3>Change Habit Status</h3>
-    <p>
-        <form action="" method="POST">
-            <input type="submit" name="delete" value="Delete">
-            {% if habit.active %}
-                <input type="submit" name="archive" value="Archive">
-            {% else %}
-                <input type="submit" name="unarchive" value="Unarchive">
-            {% endif %}
-        </form>
-    </p>
+  </div>
 </body>
+<script>
+  let navOn = false,
+    newMilestoneCounter = 0
+  function toggleNav() {
+    navOn = !navOn;
+    if (navOn) {
+      document.getElementById('sidebar-wrap').classList.add('on');
+    } else {
+      document.getElementById('sidebar-wrap').classList.remove('on');
+    }
+  }
+  function addMilestone() {
+    let milestoneWrap = document.querySelector('.milestone-wrap.new.hidden'),
+      clone = milestoneWrap.cloneNode(true),
+      text = clone.querySelector('.new-milestone-text'),
+      deadline = clone.querySelector('.new-milestone-deadline')
+    text.value = ''
+    text.name = 'new_milestone_text_' + newMilestoneCounter
+    deadline.value = ''
+    deadline.name = 'new_milestone_deadline_' + newMilestoneCounter
+    clone.classList.remove('hidden')
+    milestoneWrap.parentNode.insertBefore(clone, milestoneWrap.parentNode.lastElementChild)
+    newMilestoneCounter += 1
+  }
+</script>
 </html>
