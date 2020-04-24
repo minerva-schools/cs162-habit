@@ -59,7 +59,7 @@ def test_date_forward_weekly(client, reset_db):
 	login_user(client, 'test_user', 'test_password')
 	client.post('/add_habit', data={'title' : 'test_habit', 'description' : 'test_description', 'frequency' : 'weekly'}) #create habit
 
-	data = {'increment' : 'tomorrow'}
+	data = {'increment' : 'next'}
 	client.post('/dashboard/{}'.format(date.today()), data=data, follow_redirects=True) # navigate to tomorrow
 	assert len(Log.query.all()) == 1 #log table should only have one entry (created when habit was created)
 
@@ -78,7 +78,7 @@ def test_date_forward_monthly(client, reset_db):
 	login_user(client, 'test_user', 'test_password')
 	client.post('/add_habit', data={'title' : 'test_habit', 'description' : 'test_description', 'frequency' : 'monthly'}) #create habit
 
-	data = {'increment' : 'tomorrow'}
+	data = {'increment' : 'next'}
 	client.post('/dashboard/{}'.format(date.today()), data=data, follow_redirects=True) # navigate to tomorrow
 	assert len(Log.query.all()) == 1 #log table should only have one entry (created when habit was created)
 	assert Habit.query.all()[0].frequency == 'monthly'
@@ -116,7 +116,7 @@ def test_edit_frequency(client,reset_db):
 	# now check whether log creation works by weekly frequency
 	#
 	
-	data = {'increment' : 'tomorrow'}
+	data = {'increment' : 'next'}
 	client.post('/dashboard/{}'.format(date.today()), data=data, follow_redirects=True) # navigate to tomorrow
 	assert len(Log.query.all()) == 1 #log table should only have one entry (created when habit was created)
 
