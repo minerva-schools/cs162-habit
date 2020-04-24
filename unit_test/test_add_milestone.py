@@ -129,13 +129,12 @@ def test_set_milestone_past(client,reset_db):
     assert h is None # the habit was not added 
     assert b'The deadline cannot be in the past!' in rv.data # the message was displayed
     
-    ### Then try from an existing habit's page
     # create a habit without a milestone
     rv = client.post('/add_habit', data={'title' : 'title_test','description' : 'description_test','frequency' : 'daily'})   
     m = Milestone.query.filter_by(habit_id=1).first()
     assert m is None # no milestone should be in the db at the moment
     
     # try to add a milestone in the past
-    rv = client.post('/habit/1/edit', data={'milestone': 'test_from_edit','deadline': '2021-01-01'}, follow_redirects=True)   
+    rv = client.post('/habit/1/edit', data={'milestone': 'test_from_edit','deadline': '2000-01-01'}, follow_redirects=True)   
     m = Milestone.query.filter_by(habit_id=1).first()
-    assert m.text == 'test_from_edit' # milestone should be added to db with the correct text
+    assert m is None # milestone should be added to db with the correct text
