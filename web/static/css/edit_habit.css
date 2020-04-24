@@ -1,0 +1,95 @@
+.habit-row {
+  display: flex;
+  align-items: center;
+  padding: 0.32em 0;
+}
+.habit-row>i {
+  margin-right: 0.6em;
+}
+.milestone-wrap {
+  margin: 0.8em;
+}
+.milestone-wrap>hr {
+  margin-top: 0.8em;
+}
+.milestone-name>input {
+  font-weight: 500;
+  font-size: 1.1em;
+  margin-bottom: 0.2em;
+}
+.milestone-inner-wrap {
+  margin-left: 0.8em;
+}
+.header-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+input, label {
+  font-family: Roboto, sans-serif;;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+label {
+  margin-right: 0.8em;
+}
+
+input[type=text] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  border-radius: 0.3em;
+  border: solid 2px #303750;
+  padding: 0.2em 0.5em;
+}
+input:focus {
+  outline: none;
+  border: solid 2px #414b6c;
+}
+input[type=radio] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: solid 2px #FFFFFF;
+  padding: 0.1em 0.4em 0.2em;
+  margin-right: 0.4em;
+}
+input[type=radio]:checked {
+  background-color: #FFFFFF;
+  border: solid 2px #FFFFFF;
+}
+input[type=date] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  border: solid 2px #303750;
+  border-radius: 0.3em;
+  padding: 0 0.5em;
+}
+input[type=date]::-webkit-calendar-picker-indicator {
+  display: none;
+}
+input[type=submit] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  cursor: pointer;
+}
+
+.add-milestone {
+  display: flex;
+  justify-content: center;
+}
+.milestone-wrap.hidden {
+  display: none;
+}

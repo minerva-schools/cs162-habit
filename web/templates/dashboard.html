@@ -3,50 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
-    <link href="../static/css/global.css" rel="stylesheet" type="text/css">
-    <link href="../static/css/dashboard.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="/static/css/global.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/dashboard.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&family=Roboto:wght@400;500&family=Material+Icons+Round&display=swap" rel="stylesheet">
 
 </head>
 
 <body>
-    <div class="sidebar">
-
+    <div id="sidebar-wrap">
+      <div class="sidebar-mobile-background" onClick="toggleNav()"></div>
+      <div class="sidebar-mobile">
+        <div class="sidebar-ham" onClick="toggleNav()">
+          <div class="ham-1"></div>
+          <div class="ham-2"></div>
+        </div>
+        <p class="mobile-app-name">Habits</p>
+      </div>
+      <div class="sidebar">
+        <div class="sidebar-inner-wrap">
+          <a class="sidebar-item active" href="/">
+            <i class="material-icons-round">dashboard</i>
+            <p>Dashboard</p>
+          </a>
+          {% for habit, _ in habits %}
+            <a class="sidebar-item" href="{{'/habit/' ~ habit.id}}">
+              <i class="material-icons-round">short_text</i>
+              <p>{{habit.title}}</p>
+            </a>
+          {% endfor %}
+          <a class="sidebar-item add-habit" href="/add_habit">
+            <i class="material-icons-round">add</i>
+            <p>Add habit</p>
+          </a>
+        </div>
+      </div>
     </div>
     <div class="main-content">
-        <div id="header">
-            <div id="date">
-            <h1>{{ date }}</h1>
-            </div>
-
-            <div id="info">
-              <p> Hello {{user.username}}! </p>
-              <a class="logout" href="{{ url_for('logout') }}">Log out</a>
-            </div>
-        </div>
-
-
-        <div id="NavBar">
-            <hr>
-            <form action="{{ url_for("dashboard", current_date=date) }}" method="POST">
-                <!--back button-->
-                <button class="button yesterday" type="submit" alt="yesterday" name="increment" value="previous">
-                    &#8249;
-                </button>
-
-                <!--today button-->
-                <button class="button today" name="increment" value="today" type="submit">TODAY</button>
-
-                <!--tomorrow button-->
-                <button class="button tomorrow" type="submit" alt="tomorrow" name="increment" value="next">
-                    &#8250;
-                </button>
-
-            </form>
-        </div>
 
         <!--active habits-->
-        <div id="content">
+        <div class="content">
+          <div class="header-wrap">
+              <div id="date">
+              <h1>{{ date }}</h1>
+              </div>
+
+              <div id="info">
+                <p> Hello {{user.username}}! </p>
+                <a class="button logout" href="{{ url_for('logout') }}">Log out</a>
+              </div>
+          </div>
+
+
+          <div id="NavBar">
+              <hr>
+              <form action={{ url_for('dashboard', current_date=date) }} method="POST">
+                  <!--back button-->
+                  <button class="button yesterday" type="submit" alt="yesterday" name="increment" value="yesterday">
+                      &#8249;
+                  </button>
+
+                  <!--today button-->
+                  <button class="button today" name="increment" value="today" type="submit">TODAY</button>
+
+                  <!--tomorrow button-->
+                  <button class="button tomorrow" type="submit" alt="tomorrow" name="increment" value="tomorrow">
+                      &#8250;
+                  </button>
+
+              </form>
+          </div>
             <h3>
                 <strong>
                     Active Habits ({{ count['completed'] }} / {{ count ['total'] }})
@@ -110,14 +135,30 @@
         </div>
 
         <!--your progress-->
-        <div id="content2">
+        <div class="content">
             <h1>Your progress</h1>
+            <!--horizontal line-->
+            <hr>
         </div>
 
-        <!--horizontal line-->
-        <hr>
-
     </div>
+    <p>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {{ messages[0] }}
+      {% endif %}
+    {% endwith %}
+    </p>
 </body>
-
+<script>
+  let navOn = false;
+  toggleNav = function() {
+    navOn = !navOn;
+    if (navOn) {
+      document.getElementById('sidebar-wrap').classList.add('on');
+    } else {
+      document.getElementById('sidebar-wrap').classList.remove('on');
+    }
+  }
+</script>
 </html>

@@ -1,14 +1,9 @@
-.main-content {
-    margin-right: auto;
-    padding: 3.2em;
-}
-
-#header #date {
+#date {
     float: left;
     clear: left;
 }
 
-#header #info {
+#info {
     float: right;
     display: flex;
     align-items: center;
@@ -16,43 +11,18 @@
     padding-bottom: 0.1em;
 }
 
-hr {
-    border: 1px solid #303750;
-    border-top: 0;
-}
-
 #info>p {
   margin-right: 0.8em;
-}
-
-a:hover, a:active {
-    background-color: red;
-}
-
-.logout {
-    background-color: #262c40;
-    border-radius: 4px;
-    color: white;
-    font-weight: 500;
-    text-decoration: none;
-    padding: 0.4em 0.8em;
 }
 
 .desc:hover {
     background-color: aqua;
 }
 
-#NavBar {
-    float: none;
-    clear: left;
-    margin-top: 20px;
-}
-
 .button {
     -webkit-appearance: none;
     border: none;
     width: auto;
-    height: 36px;
     vertical-align: middle;
 }
 
@@ -78,11 +48,6 @@ a:hover, a:active {
 .button:hover {
     background-color: white;
     color: black;
-}
-
-#content {
-    height: auto;
-    padding-top: 5px;
 }
 
 .habit p {
