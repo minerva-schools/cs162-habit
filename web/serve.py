@@ -357,7 +357,7 @@ def edit_habit(habit_id):
                     if form['new_milestone_text_' + str(new_milestone_counter)]:
                         deadline = None
                         if form['new_milestone_deadline_' + str(new_milestone_counter)]:
-                            deadline = datetime.strptime(form['new_milestone_deadline_' + str(new_milestone_counter)])
+                            deadline = datetime.strptime(form['new_milestone_deadline_' + str(new_milestone_counter)], '%Y-%m-%d')
                         if deadline and deadline.date() < datetime.now().date():  #check if the deadline is not in the past
                             flash('The deadline cannot be in the past!')
                             return redirect(url_for('add_habit'))
