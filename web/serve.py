@@ -360,7 +360,7 @@ def edit_habit(habit_id):
                             deadline = datetime.strptime(form['new_milestone_deadline_' + str(new_milestone_counter)], '%Y-%m-%d')
                         if deadline and deadline.date() < datetime.now().date():  #check if the deadline is not in the past
                             flash('The deadline cannot be in the past!')
-                            return redirect(url_for('add_habit'))
+                            return redirect(url_for('edit_habit', habit_id=habit.id))
                         else:
                             milestone = Milestone(
                                 user_id = current_user.id,
