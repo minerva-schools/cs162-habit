@@ -331,11 +331,11 @@ def edit_habit(habit_id):
 
         elif 'title' in form.keys() or 'description' in form.keys() or 'frequency' in form.keys() or 'milestone_deadline_0' in form.keys():
             try:
-                if form['title']:
+                if 'title' in form.keys():
                     habit.title = form['title']
-                if form['description']:
+                if 'description' in form.keys():
                     habit.description = form['description']
-                if form['frequency']:
+                if 'frequency' in form.keys():
                     habit.frequency = form['frequency']
 
                 habit.last_modified = datetime.today()
@@ -343,7 +343,7 @@ def edit_habit(habit_id):
                 milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
 
                 for milestone in milestones:
-                    if form['milestone_text_' + str(milestone.id)]:
+                    if ('milestone_text_' + str(milestone.id)) in form.keys():
                         deadline = None
                         if form['milestone_deadline_' + str(milestone.id)]:
                             deadline = datetime.strptime(form['milestone_deadline_' + str(milestone.id)], '%Y-%m-%d')
