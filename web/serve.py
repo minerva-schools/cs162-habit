@@ -108,8 +108,7 @@ def dashboard(current_date):
         #how many habits were completed, how many habits were not
         count = {
             'completed' : len(db.session.query(Log).filter(Log.date == datetime.strptime(current_date, '%Y-%m-%d'), Log.status==True).all()),
-            'todo' : len(db.session.query(Log).filter(Log.date == datetime.strptime(current_date, '%Y-%m-%d'), Log.status==False).all()),
-            'total' : len(db.session.query(Log).filter(Log.date == datetime.strptime(current_date, '%Y-%m-%d')).all())
+            'todo' : len(db.session.query(Log).filter(Log.date == datetime.strptime(current_date, '%Y-%m-%d'), Log.status==False).all())
         }
 
         return render_template('dashboard.html', user=current_user, date=current_date, habits=habit_log_iter, count=count)
