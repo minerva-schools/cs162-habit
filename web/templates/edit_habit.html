@@ -24,7 +24,7 @@
           <p>Dashboard</p>
         </a>
         {% for habitItem in habits %}
-          <a class="{{'sidebar-item ' ~ ('active' if habit.id == habitItem.id else '')}}" href="{{'/habit/' ~ habit.id}}">
+          <a class="{{'sidebar-item ' ~ ('active' if habit.id == habitItem.id else '')}}" href="{{'/habit/' ~ habitItem.id}}">
             <i class="material-icons-round">short_text</i>
             <p>{{habitItem.title}}</p>
           </a>
@@ -174,11 +174,13 @@
     let milestoneWrap = document.querySelector('.milestone-wrap.new.hidden'),
       clone = milestoneWrap.cloneNode(true),
       text = clone.querySelector('.new-milestone-text'),
+      type = clone.querySelectorAll('.new-milestone-type'),
       deadline = clone.querySelector('.new-milestone-deadline')
-    text.value = ''
     text.name = 'new_milestone_text_' + newMilestoneCounter
-    deadline.value = ''
     deadline.name = 'new_milestone_deadline_' + newMilestoneCounter
+    type.forEach(el => {
+      el.name = 'new_milestone_type_' + newMilestoneCounter
+    })
     clone.classList.remove('hidden')
     milestoneWrap.parentNode.insertBefore(clone, milestoneWrap.parentNode.lastElementChild)
     newMilestoneCounter += 1
