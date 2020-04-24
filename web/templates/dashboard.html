@@ -30,7 +30,7 @@
             <hr>
             <form action="{{ url_for("dashboard", current_date=date) }}" method="POST">
                 <!--back button-->
-                <button class="button yesterday" type="submit" alt="yesterday" name="increment" value="yesterday">
+                <button class="button yesterday" type="submit" alt="yesterday" name="increment" value="previous">
                     &#8249;
                 </button>
 
@@ -38,7 +38,7 @@
                 <button class="button today" name="increment" value="today" type="submit">TODAY</button>
 
                 <!--tomorrow button-->
-                <button class="button tomorrow" type="submit" alt="tomorrow" name="increment" value="tomorrow">
+                <button class="button tomorrow" type="submit" alt="tomorrow" name="increment" value="next">
                     &#8250;
                 </button>
 

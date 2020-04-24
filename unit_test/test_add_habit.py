@@ -117,7 +117,7 @@ def test_date_forward(client, reset_db):
 	today = date.today()
 
 	data = {
-		'increment' : 'yesterday'
+		'increment' : 'previous'
 	}
 
 	client.post('/dashboard/{}'.format(today), data=data, follow_redirects=True)
@@ -125,7 +125,7 @@ def test_date_forward(client, reset_db):
 	assert len(Log.query.all()) == 1 #log table should only have one entry (created when habit was created)
 
 	data = {
-		'increment' : 'tomorrow'
+		'increment' : 'next'
 	}
 
 	client.post('/dashboard/{}'.format(today), data=data, follow_redirects=True)
