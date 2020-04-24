@@ -56,7 +56,7 @@
 
           <div id="NavBar">
               <hr>
-              <form action="{ url_for('dashboard', current_date=date }" method="POST">
+              <form action={{ url_for('dashboard', current_date=date) }} method="POST">
                   <!--back button-->
                   <button class="button yesterday" type="submit" alt="yesterday" name="increment" value="yesterday">
                       &#8249;
