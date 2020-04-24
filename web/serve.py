@@ -343,32 +343,33 @@ def edit_habit(habit_id):
                 milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
 
                 for milestone in milestones:
-                    deadline = None
-                    if form['milestone_deadline_' + str(milestone.id)]:
-                        deadline = datetime.strptime(form['milestone_deadline_' + str(milestone.id)], '%Y-%m-%d')
-                    milestone.text = form['milestone_text_' + str(milestone.id)]
-                    milestone.type = form['milestone_type_' + str(milestone.id)]
-                    milestone.deadline = deadline
+                    if form['milestone_text_' + str(milestone.id)]:
+                        deadline = None
+                        if form['milestone_deadline_' + str(milestone.id)]:
+                            deadline = datetime.strptime(form['milestone_deadline_' + str(milestone.id)], '%Y-%m-%d')
+                        milestone.text = form['milestone_text_' + str(milestone.id)]
+                        milestone.type = form['milestone_type_' + str(milestone.id)]
+                        milestone.deadline = deadline
 
                 # Add a user-defined milestone if user inserted one:
-                # new_milestone_counter = 0
-                # while ('new_milestone_text_' + str(new_milestone_counter)) in form.keys():
-                #     if form['new_milestone_text_' + str(new_milestone_counter)]:
-                #         deadline = None
-                #         if form['new_milestone_deadline_' + str(new_milestone_counter)]:
-                #             deadline = datetime.strptime(form['new_milestone_deadline_' + str(new_milestone_counter)])
-                #         if deadline and deadline.date() < datetime.now().date():  #check if the deadline is not in the past
-                #             flash('The deadline cannot be in the past!')
-                #             return redirect(url_for('add_habit'))
-                #         else:
-                #             milestone = Milestone(
-                #                 user_id = current_user.id,
-                #                 habit_id = habit.id,
-                #                 text = form['new_milestone_text_' + str(new_milestone_counter)],
-                #                 type = form['new_milestone_type_' + str(new_milestone_counter)],
-                #                 deadline = deadline)
-                #             db.session.add(milestone)
-                #     new_milestone_counter += 1
+                new_milestone_counter = 0
+                while ('new_milestone_text_' + str(new_milestone_counter)) in form.keys():
+                    if form['new_milestone_text_' + str(new_milestone_counter)]:
+                        deadline = None
+                        if form['new_milestone_deadline_' + str(new_milestone_counter)]:
+                            deadline = datetime.strptime(form['new_milestone_deadline_' + str(new_milestone_counter)])
+                        if deadline and deadline.date() < datetime.now().date():  #check if the deadline is not in the past
+                            flash('The deadline cannot be in the past!')
+                            return redirect(url_for('add_habit'))
+                        else:
+                            milestone = Milestone(
+                                user_id = current_user.id,
+                                habit_id = habit.id,
+                                text = form['new_milestone_text_' + str(new_milestone_counter)],
+                                type = form['new_milestone_type_' + str(new_milestone_counter)],
+                                deadline = deadline)
+                            db.session.add(milestone)
+                    new_milestone_counter += 1
 
                 db.session.add(habit)
                 db.session.commit()
