@@ -24,8 +24,7 @@ def test_add_milestone_no_deadline(client,reset_db):
             'frequency' : 'daily',
             'new_milestone_text_0': 'test_mile',
             'new_milestone_type_0': 'count',
-            'new_milestone_deadline_0': None}
-            )
+            'new_milestone_deadline_0': None})
     assert Milestone.query.filter_by(habit_id=1, text='test_mile').first() is None # milestone should /not/ be added to db
 
     client.post('/login', data={'username': 'test_user', 'password': 'test_password'}) # login with created user
@@ -38,8 +37,7 @@ def test_add_milestone_no_deadline(client,reset_db):
             'frequency' : 'daily',
             'new_milestone_text_0': 'test_mile',
             'new_milestone_type_0': 'count',
-            'new_milestone_deadline_0': None}
-            )
+            'new_milestone_deadline_0': None})
 
     m = Milestone.query.filter_by(habit_id=1, text='test_mile').first()
     assert m.text == 'test_mile' # milestone should be added to db with the correct text
@@ -74,8 +72,7 @@ def test_add_milestone_with_deadline(client,reset_db):
             'frequency' : 'daily',
             'new_milestone_text_0': 'test_mile',
             'new_milestone_type_0': 'count',
-            'new_milestone_deadline_0': '2021-01-01'
-            })
+            'new_milestone_deadline_0': '2021-01-01'})
 
     m = Milestone.query.filter_by(habit_id=1, text='test_mile').first()
     assert m.text == 'test_mile' # milestone should be added to db with the correct text
@@ -126,9 +123,7 @@ def test_set_milestone_past(client,reset_db):
             'frequency' : 'daily',
             'new_milestone_text_0': 'test_from_edit',
             'new_milestone_type_0': 'count',
-            'new_milestone_deadline_0': deadline},
-            follow_redirects=True
-            )
+            'new_milestone_deadline_0': deadline}, follow_redirects=True)
 
     # query milestone
     m = Milestone.query.filter_by(habit_id=1).first()

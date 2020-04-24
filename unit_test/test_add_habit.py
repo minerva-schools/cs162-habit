@@ -24,22 +24,22 @@ def test_add_habit(client,reset_db):
 	create_db_user('test_user','test_password') # create a user in the db for the test
 	assert len(list(User.query.filter_by(username='test_user'))) == 1 # ensure the user was added
 
-	# adding a habit should fail without login 
+	# adding a habit should fail without login
 	rv = client.post('/add_habit', data={
             'title' : 'title_test',
             'description' : 'description_test',
             'frequency' : 'daily'})
-	# assert b'Please log in to access this page' in rv.data 
+	# assert b'Please log in to access this page' in rv.data
 	assert Habit.query.filter_by(id=1, title='title_test').first() is None # habit should /not/ be added to db
 
 	# log in and try again - now it should work
 	login_user(client, 'test_user', 'test_password') # login with created user
-	# adding a habit should fail without login 
+	# adding a habit should fail without login
 	rv = client.post('/add_habit', data={
             'title' : 'title_test',
             'description' : 'description_test',
             'frequency' : 'daily'})
-	# assert b'Please log in to access this page' in rv.data 
+	# assert b'Please log in to access this page' in rv.data
 	assert Habit.query.filter_by(id=1, title='title_test').first() is not None # habit should /not/ be added to db
 	assert Log.query.filter_by(id=1).first() is not None
 
@@ -53,12 +53,13 @@ def test_edit_habit(client,reset_db):
 
 	habit = Habit.query.first()
 	log = Log.query.first()
-	
+
 	client.get('/logout')
 
 	data = {
 		'title' : 'test_title_edit',
-		'description' : 'test_description_edit'
+		'description' : 'test_description_edit',
+		'frequency' : 'daily'
 	}
 
 	client.post(('/habit/{}/edit'.format(habit.id)), data=data)
@@ -131,10 +132,9 @@ def test_date_forward(client, reset_db):
 	client.post('/dashboard/{}'.format(today), data=data, follow_redirects=True)
 
 	tmrw = date.today() + timedelta(days=1)
-	
+
 	log = Log.query.filter_by(id=2).first()
 
 	assert date.strftime(log.date, '%Y-%m-%d') == date.strftime(tmrw, '%Y-%m-%d') #date of log should be tmr's date
 
 	assert len(Log.query.all()) == 2 #log table should now have two, one for today and the next for tomorrow
-
