@@ -94,8 +94,8 @@ def dashboard(current_date):
                                 habit_id=habit.id,
                                 date=datetime.strptime(current_date, '%Y-%m-%d')
                                 )
-                        db.session.add(log)
-                        db.session.commit()
+                            db.session.add(log)
+                            db.session.commit()
 
                     except:
                         db.session.rollback()
