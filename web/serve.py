@@ -203,7 +203,8 @@ def dashboard(current_date):
 @login_required
 def add_habit():
     if request.method == 'GET':
-        return render_template('add_habit.html', user=current_user)
+        habits = Habit.query.filter_by(user_id=current_user.id, active=True)
+        return render_template('add_habit.html', habits=habits, user=current_user)
     elif request.method == 'POST':
 
         try:
@@ -229,6 +230,27 @@ def add_habit():
 
             db.session.add(log)
 
+            # Add a user-defined milestone if user inserted one:
+            form = request.form.to_dict()
+            new_milestone_counter = 0
+            while ('new_milestone_text_' + str(new_milestone_counter)) in form.keys():
+                if form['new_milestone_text_' + str(new_milestone_counter)]:
+                    deadline = None
+                    if form['new_milestone_deadline_' + str(new_milestone_counter)]:
+                        deadline = datetime.strptime(form['new_milestone_deadline_' + str(new_milestone_counter)], '%Y-%m-%d')
+                    if deadline and deadline.date() < datetime.now().date():  #check if the deadline is not in the past
+                        flash('The deadline cannot be in the past!')
+                        return redirect(url_for('add_habit'))
+                    else:
+                        milestone = Milestone(
+                            user_id = current_user.id,
+                            habit_id = habit.id,
+                            text = form['new_milestone_text_' + str(new_milestone_counter)],
+                            type = form['new_milestone_type_' + str(new_milestone_counter)],
+                            deadline = deadline)
+                        db.session.add(milestone)
+                new_milestone_counter += 1
+
             # Automatically create a 'count' milestone when the habit is created
             # E.g. A 'count' milestone is achieved when the user completed the habit a total number of 3 times
             for n in [3,7,14,30,60]:  # milestone is achieved when habit is checked 3, 7, 14, 30 and 60 times total
@@ -241,18 +263,6 @@ def add_habit():
                 streak_milestone = Milestone(user_id=current_user.id, habit_id=habit.id, type='streak', text=f'Complete the habit {n} consecutive times!')
                 db.session.add(streak_milestone)
 
-
-            # Add a user-defined milestone if user inserted one:
-            if request.form.get('milestone'):
-                deadline=None
-                if request.form.get('deadline'):
-                    deadline=datetime.strptime(request.form['deadline'], '%Y-%m-%d')
-                    if deadline.date() < datetime.now().date():  #check if the deadline is not in the past
-                        flash('The deadline cannot be in the past!')
-                        return redirect(url_for('add_habit'))
-                milestone = Milestone(user_id=current_user.id, habit_id=habit.id, type='custom', text=request.form['milestone'],deadline=deadline)
-                db.session.add(milestone)
-
             db.session.commit() # end of the transaction
         except:
             db.session.rollback()
@@ -264,53 +274,22 @@ def add_habit():
 @app.route('/habit/<habit_id>')
 @login_required
 def habit(habit_id):
+    habits = Habit.query.filter_by(user_id=current_user.id, active=True)
     habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
     milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
-    return render_template('habit.html', habit=habit, milestones=milestones)
+    return render_template('habit.html', habits=habits, habit=habit, milestones=milestones)
 
 @app.route('/habit/<habit_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_habit(habit_id):
     habit = Habit.query.filter_by(id=habit_id, user_id=current_user.id).first()
     if request.method == 'GET':
-        return render_template('edit_habit.html', habit=habit)
+        habits = Habit.query.filter_by(user_id=current_user.id, active=True)
+        milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
+        return render_template('edit_habit.html', habits=habits, milestones = milestones, habit=habit)
     elif request.method == 'POST':
-        if request.form.get('title') or request.form.get('frequency') or request.form.get('description'):
-            try:
-                if request.form.get('title'): 
-                    habit.title = request.form.get('title')
-                if request.form.get('description'):
-                    habit.description = request.form.get('description')
-
-                if request.form.get('frequency'):
-                    habit.frequency = request.form.get('frequency')
-                    habit.last_modified = datetime.today()
-
-                db.session.add(habit)
-                db.session.commit()
-            except:
-                db.session.rollback()
-                flash('Nope, didn''t work. Redirecting ya')
-            
-            return redirect(url_for('habit', habit_id=habit.id))
-
-        elif request.form.get('milestone'):
-            deadline=None
-            if request.form.get('deadline'):
-                deadline=datetime.strptime(request.form['deadline'], '%Y-%m-%d')
-            try:
-                milestone = Milestone(user_id=current_user.id, habit_id=habit.id, text=request.form['milestone'],deadline=deadline)
-
-                db.session.add(milestone)
-                db.session.commit()
-            except:
-                db.session.rollback()
-                flash('Dammit! There was an error adding a milestone. Please try again.')
-                return redirect(url_for('habit', habit_id=habit.id))
-
-            return redirect(url_for('habit', habit_id=habit.id))
-
-        elif request.form.get('archive'): #allows a user to set a habit to inactive, this will prevent habit logs from showing up on the dashboard
+        form = request.form.to_dict()
+        if 'archive' in form.keys(): #allows a user to set a habit to inactive, this will prevent habit logs from showing up on the dashboard
             habit.active = False
             try:
                 db.session.add(habit)
@@ -322,7 +301,7 @@ def edit_habit(habit_id):
 
             return redirect(url_for('habit', habit_id=habit.id))
 
-        elif request.form.get('unarchive'): #allows a user to set a habit to active, this will allow habit logs to show up on dashboard
+        elif 'unarchive' in form.keys(): #allows a user to set a habit to active, this will allow habit logs to show up on dashboard
             habit.active = True
             try:
                 db.session.add(habit)
@@ -335,7 +314,7 @@ def edit_habit(habit_id):
 
             return redirect(url_for('habit', habit_id=habit.id))
 
-        elif request.form.get('delete'): #hard delete the current habit
+        elif 'delete' in form.keys(): #hard delete the current habit
             #TODO: it is probably a good idea to soft delete habits and not expose hard delete functionality to the user
             Log.query.filter_by(habit_id=habit.id).delete()
             Milestone.query.filter_by(habit_id=habit.id).delete()
@@ -349,6 +328,55 @@ def edit_habit(habit_id):
 
 
             return redirect(url_for('dashboard', current_date=date.today()))
+
+        elif form['title'] or form['description'] or form['frequency']:
+            try:
+                if form['title']:
+                    habit.title = form['title']
+                if form['description']:
+                    habit.description = form['description']
+                if form['frequency']:
+                    habit.frequency = form['frequency']
+
+                habit.last_modified = datetime.today()
+
+                milestones = Milestone.query.filter_by(habit_id=habit_id, user_id=current_user.id).all()
+
+                for milestone in milestones:
+                    deadline = None
+                    if form['milestone_deadline_' + str(milestone.id)]:
+                        deadline = datetime.strptime(form['milestone_deadline_' + str(milestone.id)], '%Y-%m-%d')
+                    milestone.text = form['milestone_text_' + str(milestone.id)]
+                    milestone.type = form['milestone_type_' + str(milestone.id)]
+                    milestone.deadline = deadline
+
+                # Add a user-defined milestone if user inserted one:
+                # new_milestone_counter = 0
+                # while ('new_milestone_text_' + str(new_milestone_counter)) in form.keys():
+                #     if form['new_milestone_text_' + str(new_milestone_counter)]:
+                #         deadline = None
+                #         if form['new_milestone_deadline_' + str(new_milestone_counter)]:
+                #             deadline = datetime.strptime(form['new_milestone_deadline_' + str(new_milestone_counter)])
+                #         if deadline and deadline.date() < datetime.now().date():  #check if the deadline is not in the past
+                #             flash('The deadline cannot be in the past!')
+                #             return redirect(url_for('add_habit'))
+                #         else:
+                #             milestone = Milestone(
+                #                 user_id = current_user.id,
+                #                 habit_id = habit.id,
+                #                 text = form['new_milestone_text_' + str(new_milestone_counter)],
+                #                 type = form['new_milestone_type_' + str(new_milestone_counter)],
+                #                 deadline = deadline)
+                #             db.session.add(milestone)
+                #     new_milestone_counter += 1
+
+                db.session.add(habit)
+                db.session.commit()
+            except:
+                db.session.rollback()
+                flash('Nope, didn''t work. Redirecting ya')
+
+            return redirect(url_for('habit', habit_id=habit.id))
 
 @app.route('/archive') #page for all the habits that are currently set to inactive
 @login_required

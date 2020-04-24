@@ -86,6 +86,10 @@
                 <p>{{milestone.text}}</p>
               </div>
               <div class="milestone-inner-wrap">
+                <div class="habit-row">
+                  <i class="material-icons-round">category</i>
+                  <p>{{milestone.type.capitalize()}}</p>
+                </div>
                 {% if milestone.deadline %}
                 <div class="habit-row">
                   <i class="material-icons-round">event_note</i>
