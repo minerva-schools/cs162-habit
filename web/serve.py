@@ -174,7 +174,7 @@ def dashboard(current_date):
                                 db.session.commit()
 
                     except:
-                        flash("Oops! We couldn't keep track of your streak count for this habit. Try again?")
+                        flash("Oops! We couldn't keep track of your progress for this habit. Try again?")
                         return redirect(url_for('dashboard', current_date=datetime.strptime(current_date, '%Y-%m-%d'))) #if fail, stay on the day where the user wanted to check off a habit
 
 
@@ -299,7 +299,7 @@ def edit_habit(habit_id):
             db.session.commit()
 
             return redirect(url_for('habit', habit_id=habit.id))
-            
+
         elif request.form.get('milestone'):
             deadline=None
             if request.form.get('deadline'):
