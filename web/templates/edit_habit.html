@@ -98,14 +98,6 @@
           </div>
           <div class="milestone-inner-wrap">
             <div class="habit-row">
-              <i class="material-icons-round">category</i>
-              <input type="radio" name="{{'milestone_type_' ~ milestone.id}}" value="count" {{'checked' if milestone.type == 'count'}}/>
-              <label>Count</label>
-              <input type="radio" name="{{'milestone_type_' ~ milestone.id}}" value="streak" {{'checked' if milestone.type == 'streak'}}/>
-              <label>Streak</label>
-              </select>
-            </div>
-            <div class="habit-row">
               <i class="material-icons-round">event_note</i>
               <input type="date" autocomplete="off" name="{{'milestone_deadline_' ~ milestone.id}}" value="{{milestone.deadline}}"/>
             </div>
@@ -128,14 +120,6 @@
           <input class="new-milestone-text" type="text" autocomplete="off" placeholder="New milestone"/>
         </div>
         <div class="milestone-inner-wrap">
-          <div class="habit-row">
-            <i class="material-icons-round">category</i>
-            <input type="radio" class="new-milestone-type" value="count" checked/>
-            <label>Count</label>
-            <input type="radio" class="new-milestone-type" value="streak" />
-            <label>Streak</label>
-            </select>
-          </div>
           <div class="habit-row">
             <i class="material-icons-round">event_note</i>
             <label>Deadline:</label>
@@ -174,13 +158,9 @@
     let milestoneWrap = document.querySelector('.milestone-wrap.new.hidden'),
       clone = milestoneWrap.cloneNode(true),
       text = clone.querySelector('.new-milestone-text'),
-      type = clone.querySelectorAll('.new-milestone-type'),
       deadline = clone.querySelector('.new-milestone-deadline')
     text.name = 'new_milestone_text_' + newMilestoneCounter
     deadline.name = 'new_milestone_deadline_' + newMilestoneCounter
-    type.forEach(el => {
-      el.name = 'new_milestone_type_' + newMilestoneCounter
-    })
     clone.classList.remove('hidden')
     milestoneWrap.parentNode.insertBefore(clone, milestoneWrap.parentNode.lastElementChild)
     newMilestoneCounter += 1
