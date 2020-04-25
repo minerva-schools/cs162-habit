@@ -13,6 +13,8 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['FLASK_ENV'] = os.getenv('development')
+app.config['FLASK_APP'] = os.getenv('web')
 
 db = SQLAlchemy(app)
 
