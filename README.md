@@ -10,8 +10,15 @@ git clone https://github.com/minerva-schools/cs162-habit.git && cd cs162-habit
 ```
 
 2. Create / Activate Virtual Environment (requires python3 and virtualenv)
+
+For Mac
 ```bash
 python3 -m venv venv && source venv/bin/activate
+```
+
+For Windows
+```bash
+python3 -m venv venv && source venv/scripts/activate
 ```
 
 3. Install dependencies
@@ -35,8 +42,15 @@ Navigate to [localhost:5000](localhost:5000) and you should see a link to sign u
 To run the unit tests, complete the following steps:
 
 1. Create / Activate Virtual Environment
+
+For Mac
 ```bash
 python3 -m venv venv_unit && source venv_unit/bin/activate
+```
+
+For Windows
+```bash
+python3 -m venv venv_unit && source venv_unit/scripts/activate
 ```
 
 2. Install unit_test dependencies
@@ -58,8 +72,15 @@ Note: Make sure you have the local server up and running! Due to time constraint
 To run the integration test, complete the following steps:
 
 1. Create / Activate Virtual Environment
+
+For Mac
 ```bash
 python3 -m venv venv_integration && source venv_integration/bin/activate
+```
+
+For Windows
+```bash
+python3 -m venv venv_integration && source venv_integration/scripts/activate
 ```
 
 2. Install integration_test dependencies
