@@ -91,7 +91,7 @@
                         <!--undone description-->
                         <p>
                             <label for="{{log.id}}">
-                            <a href="{{ url_for('habit', habit_id=habit.id) }}" class="title">
+                            <a style="color:#AFEEEE" href="{{ url_for('habit', habit_id=habit.id) }}" class="title">
                                 {{habit.title}}
                             </a>
                             </label>
@@ -116,8 +116,8 @@
                         <!--done description-->
                         <p>
                             <label for="{{log.id}}">
-                            <a href="{{ url_for('habit', habit_id=habit.id) }}" class="title">
-                                {{habit.title}}
+                            <a style="color:#AFEEEE" href="{{ url_for('habit', habit_id=habit.id) }}" class="title">
+                                <s>{{habit.title}}</s>
                             </a>
                             </label>
                         </p>
