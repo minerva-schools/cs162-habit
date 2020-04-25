@@ -1,107 +1,83 @@
-# Welcome to CS162 Final Project
+# Welcome to CS162 Habit Team's Final Project!
 
-## Clone Repository
+## Let's Show You Around
 
-### Make Project Directory
+### To get the app running on your machine, complete the following steps:
+
+1. Clone the repo and cd into it
 ```bash
-git clone https://github.com/minerva-schools/cs162-habit.git
+git clone https://github.com/minerva-schools/cs162-habit.git && cd cs162-habit
 ```
 
-## Setup Local Environment
-
-### Install Dependencies
-
-1. Install python3 and pip3
-
+2. Create / Activate Virtual Environment (requires python3 and virtualenv)
 ```bash
-$ brew install python3
+python3 -m venv venv && source venv/bin/activate
 ```
 
-2. Install virutalenv
-
+3. Install dependencies
 ```bash
-$ pip3 install virtualenv
+pip3 install -r requirements.txt
 ```
 
-### Run Virtual Environment
-
-3. Create virtualenv
-
+4. Run the app!
 ```bash
-$ virtualenv -p python3 venv
-```
-OR
-```bash
-$ python3 -m venv venv
+python3 -m flask run
 ```
 
-4. Activate virtualenv
-```bash
-$ source venv/bin/activate
-```
-Or, if you are **using Windows** - [reference source:](https://stackoverflow.com/questions/8921188/issue-with-virtualenv-cannot-activate)
+Navigate to [localhost:5000](localhost:5000) and you should see a link to sign up and play around!
 
-$ venv\Scripts\activate
+![image info](./web/static/media/signup.png)
 
-5. Install dependencies inside virtual environment
-```bash
-(venv) $ pip3 install -r requirements.txt
-```
+## Running Tests
 
-6. Deactivate virtual environment
+### Unit Tests
+
+To run the unit tests, complete the following steps:
+
+1. Create / Activate Virtual Environment
 ```bash
-$ deactivate
+python3 -m venv venv_unit && source venv_unit/bin/activate
 ```
 
-## Environment Variables
+2. Install unit_test dependencies
+```bash
+pip3 install -r requirements-unit.txt
+```
 
-All environment variables are stored within the `.env` file and loaded with dotenv package.
-
-**Never** commit your local settings to the Github repository!
-
-## Run Application
-
-Start the server by running:
-
-    $ export FLASK_ENV=development
-    $ export FLASK_APP=web
-    $ python3 -m flask run
-
-Navigate to [localhost:5000](localhost:5000), you should see "Hello World!".
-
-## Unit Tests
-To run the unit tests use the following commands:
-
-    $ python3 -m venv venv_unit
-    $ source venv_unit/bin/activate
-    (venv_unit) $ pip3 install -r requirements-unit.txt
-    (venv_unit) $ export SQLALCHEMY_DATABASE_URI='sqlite:///web.db'
-    (venv_unit) $ pytest unit_test
-    (venv_unit) $ deactivate
+3. Run the unit tests
+```bash
+pytest unit_test
+```
 
 All tests should pass.
-
-Note: this is a seperate virtual environment!
 
 ## Integration Tests
-Start by running the web server in a separate terminal.
 
-Now run the integration tests using the following commands:
+Note: Make sure you have the local server up and running! Due to time constraints, no significant integration test development occurred.
 
-    $ python3 -m venv venv_integration
-    $ source venv_integration/bin/activate
-    (venv_integration) $ pip3 install -r requirements-integration.txt
-    (venv_integration) $ pytest integration_test
-    (venv_integration) $ deactivate
+To run the integration test, complete the following steps:
+
+1. Create / Activate Virtual Environment
+```bash
+python3 -m venv venv_integration && source venv_integration/bin/activate
+```
+
+2. Install integration_test dependencies
+```bash
+pip3 install -r requirements-integration.txt
+```
+
+3. Run the integration tests
+```bash
+pytest integration_test
+```
 
 All tests should pass.
 
-Note: this is a seperate virutal environment!
-
 ## Contributors
-- Zane Sand: Team Lead / DevOps & Backend
-- Tom Kremer: Backend
-- Zineb Salimi: Backend
-- Nour Elkhalawy: Design / Backend
-- Nathan Torento: Frontend
-- Vu Luong: Frontend
+- [Zane Sand](): Team Lead / DevOps & Backend
+- [Tom Kremer](https://www.linkedin.com/in/tom-kremer/): Backend
+- [Zineb Salimi](https://www.linkedin.com/in/zineb-salimi-54a1a3149/): Backend
+- [Nour Elkhalawy](https://www.linkedin.com/in/nour-elkhalawy/): Design / Backend
+- [Nathan Torento](https://www.linkedin.com/in/nathantorento/): Frontend
+- [Vu Luong](https://www.linkedin.com/in/vuluong/): Frontend
