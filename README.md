@@ -75,7 +75,7 @@ pytest integration_test
 All tests should pass.
 
 ## Contributors
-- [Zane Sand](): Team Lead / DevOps & Backend
+- [Zane Sand](https://www.youtube.com/watch?v=dQw4w9WgXcQ): Team Lead / DevOps & Backend
 - [Tom Kremer](https://www.linkedin.com/in/tom-kremer/): Backend
 - [Zineb Salimi](https://www.linkedin.com/in/zineb-salimi-54a1a3149/): Backend
 - [Nour Elkhalawy](https://www.linkedin.com/in/nour-elkhalawy/): Design / Backend
