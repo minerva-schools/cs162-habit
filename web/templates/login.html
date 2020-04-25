@@ -3,26 +3,33 @@
 <head>
     <meta charset="utf-8" />
     <title>Login</title>
+    <link href="../static/css/signup.css" rel="stylesheet" type="text/css" >
 </head>
 <body>
-    <h1> Login </h1>
-    <form method="POST" action="{{ url_for('login') }}">
-        <input type="username" name="username" placeholder="Your Username" autofocus="">
-        <input type="password" name="password" placeholder="Your Password">
-        <label class="checkbox">
-            <input type="checkbox" name="remember">
-            Remember me
-        </label>
-    <button type='submit' >Login</button>
-    </form>
-	<p>
-	{% with messages = get_flashed_messages() %}
-	{% if messages %}
-	{{ messages[0] }}. Try again.
-	{% endif %}
-	{% endwith %}
-    </p>
-
-    <a href=" {{ url_for('signup') }}">Sign Up</a>
+    <div class="loginbox">
+        <img src="../static/media/logo.png" class="logo">
+        <h1> Sign In </h1>
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="username" name="username" placeholder="  Username" autofocus="">
+            <input type="password" name="password" placeholder="  Password">
+            <label class="checkbox">
+                <input type="checkbox" name="remember">
+                Remember me
+            </label>
+            <button type='submit' >Sign in</button>
+        </form>
+        <p>
+            Don't have an account?
+        </p>
+        <p><a href=" {{ url_for('signup') }}">Sign up now!</a></p>
+        <p>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {{ messages[0] }}
+            {% endif %}
+            {% endwith %}
+        </p>
+        
+    </div>
 </body>
 </html>
