@@ -6,7 +6,7 @@
 
 1. Clone the repo and cd into it
 ```bash
-git clone https://github.com/minerva-schools/cs162-habit.git | cd cs162-habit
+git clone https://github.com/minerva-schools/cs162-habit.git && cd cs162-habit
 ```
 
 2. Create / Activate Virtual Environment (requires python3 and virtualenv)
